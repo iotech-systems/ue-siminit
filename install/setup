@@ -4,3 +4,24 @@
 . .syslib/syscore
 
 echo ""
+<<<<<<< HEAD
+
+if [ ! -f "$TOKEN_FILE" ]; then
+   echo -e "  ${BLDRED}TOKEN_FILE_NOT_FOUND: $TOKEN_FILE${ECLR}"
+   echo -e "    ${RED}Please request git-token from iotech.systems in order to complete this setup.${ECLR}"
+   echo ""
+   exit 1
+fi
+
+
+GTOKEN=$(cat "token-file")
+echo " -> GTOKEN: $GTOKEN"
+
+
+
+
+echo ""
+echo " -- script end -- "
+echo ""
+=======
+>>>>>>> parent of 7454a22 (update)
