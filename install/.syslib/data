@@ -1,0 +1,18 @@
+#!/bin/bash
+
+RED_CODE="31"
+GRN_CODE="32"
+BLU_CODE="34"
+BLDRED="\e[1;${RED_CODE}m"
+BLDGRN="\e[1;${GRN_CODE}m"
+BLDBLU="\e[1;${BLU_CODE}m"
+ITALICRED="\e[3;${RED}m"
+ECLR="\e[0m"
+
+
+
+echo ""
+echo -e "${BLDGRN} + lib-file: .syslib/data${ECLR}"
+
+
+# -- github repos --

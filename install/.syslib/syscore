@@ -1,5 +1,4 @@
 #!/bin/bash
 
 
-
-echo "lib-file: $0"
+echo -e "${BLDGRN} + lib-file: .syslib/syscore${ECLR}"
