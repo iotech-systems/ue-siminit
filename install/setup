@@ -4,7 +4,7 @@
 . .syslib/syscore
 
 echo ""
-<<<<<<< HEAD
+
 
 if [ ! -f "$TOKEN_FILE" ]; then
    echo -e "  ${BLDRED}TOKEN_FILE_NOT_FOUND: $TOKEN_FILE${ECLR}"
@@ -21,7 +21,5 @@ echo " -> GTOKEN: $GTOKEN"
 
 
 echo ""
-echo " -- script end -- "
+echo " -- setup end -- "
 echo ""
-=======
->>>>>>> parent of 7454a22 (update)
