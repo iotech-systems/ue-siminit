@@ -18,12 +18,13 @@ ECLR="\e[0m"
 
 TOKEN_FILE="token-file"
 
+clear
 echo ""
 echo -e "${BLDGRN} + lib-file: .syslib/data${ECLR}"
 
 
 # -- github repos --
-GH_CORE="https://github.com/iotech-systems/ue-core.git"
-GH_PYEN="https://github.com/iotech-systems/ue-pyengine.git"
-GH_SMUI="https://github.com/iotech-systems/ue-simui.git"
-GH_SBRD="https://github.com/iotech-systems/ue-simbridge.git"
+GH_CORE="https://TOKEN@github.com/iotech-systems/ue-core.git"
+GH_PYEN="https://TOKEN@github.com/iotech-systems/ue-pyengine.git"
+GH_SMUI="https://TOKEN@github.com/iotech-systems/ue-simui.git"
+GH_SBRD="https://TOKEN@github.com/iotech-systems/ue-simbridge.git"

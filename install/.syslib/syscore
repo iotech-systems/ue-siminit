@@ -4,15 +4,19 @@
 echo -e "${BLDGRN} + lib-file: .syslib/syscore${ECLR}"
 
 
-
 clone_repo () {
    echo "" && echo -e " ${BLDBLU}(( clone_repo ))${ECLR}"
-   echo "   repo: $1"
+   echo "   token: $1"
+   echo "   url: $2"
    echo "   cwd: $(pwd)"
 
+   # shellcheck disable=SC2001
+   repo_url=$(echo "$2" | sed "s/TOKEN/$1/")
+   echo -e "   ${BLU}$repo_url${ECLR}"
+
    echo -e "${GRY}"
-   git clone "$1"
+   git clone "$repo_url"
    echo -e "${ECLR}"
 
-
+   return 0
 }

@@ -18,14 +18,19 @@ GTOKEN=$(cat "token-file")
 echo " -> GTOKEN: $GTOKEN"
 
 # -- move to github folder --
-cd ../../../tmp-github || exit 1
+GHROOT=$(cat "github-root")
+if [ ! -d "$GHROOT" ]; then
+   echo -e "  ${BLDRED}FOLDER_NOT_FOUND: $GHROOT${ECLR}" && echo ""
+   exit 2
+fi
 
+cd "$GHROOT" || exit 1
 
-clone_repo "$GH_CORE"
-clone_repo "$GH_PYEN"
-clone_repo "$GH_SMUI"
-clone_repo "$GH_SBRD"
-
+# -- pull github repos --
+clone_repo "$GTOKEN" "$GH_CORE"
+clone_repo "$GTOKEN" "$GH_PYEN"
+clone_repo "$GTOKEN" "$GH_SMUI"
+clone_repo "$GTOKEN" "$GH_SBRD"
 
 
 echo ""
