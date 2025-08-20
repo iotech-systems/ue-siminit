@@ -17,6 +17,14 @@ fi
 GTOKEN=$(cat "token-file")
 echo " -> GTOKEN: $GTOKEN"
 
+# -- move to github folder --
+cd ../../../tmp-github || exit 1
+
+
+clone_repo "$GH_CORE"
+clone_repo "$GH_PYEN"
+clone_repo "$GH_SMUI"
+clone_repo "$GH_SBRD"
 
 
 

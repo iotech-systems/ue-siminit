@@ -2,3 +2,17 @@
 
 
 echo -e "${BLDGRN} + lib-file: .syslib/syscore${ECLR}"
+
+
+
+clone_repo () {
+   echo "" && echo -e " ${BLDBLU}(( clone_repo ))${ECLR}"
+   echo "   repo: $1"
+   echo "   cwd: $(pwd)"
+
+   echo -e "${GRY}"
+   git clone "$1"
+   echo -e "${ECLR}"
+
+
+}

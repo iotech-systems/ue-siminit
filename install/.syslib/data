@@ -4,9 +4,12 @@
 RED_CODE="31"
 GRN_CODE="32"
 BLU_CODE="34"
+GRY_CODE="90"
+
 RED="\e[0;${RED_CODE}m"
 GRN="\e[0;${GRN_CODE}m"
 BLU="\e[0;${BLU_CODE}m"
+GRY="\e[0;${GRY_CODE}m"
 BLDRED="\e[1;${RED_CODE}m"
 BLDGRN="\e[1;${GRN_CODE}m"
 BLDBLU="\e[1;${BLU_CODE}m"
@@ -20,3 +23,7 @@ echo -e "${BLDGRN} + lib-file: .syslib/data${ECLR}"
 
 
 # -- github repos --
+GH_CORE="https://github.com/iotech-systems/ue-core.git"
+GH_PYEN="https://github.com/iotech-systems/ue-pyengine.git"
+GH_SMUI="https://github.com/iotech-systems/ue-simui.git"
+GH_SBRD="https://github.com/iotech-systems/ue-simbridge.git"
