@@ -36,6 +36,8 @@ clone_repo "$GTOKEN" "$GH_CORE"
 clone_repo "$GTOKEN" "$GH_PYEN"
 clone_repo "$GTOKEN" "$GH_SMUI"
 clone_repo "$GTOKEN" "$GH_SBRD"
+clone_repo "$GTOKEN" "$GH_SAPI"
+
 
 
 echo ""
