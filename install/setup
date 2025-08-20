@@ -1,11 +1,11 @@
 #!/bin/bash
 
+
 . .syslib/data
 . .syslib/syscore
 
+
 echo ""
-
-
 if [ ! -f "$TOKEN_FILE" ]; then
    echo -e "  ${BLDRED}TOKEN_FILE_NOT_FOUND: $TOKEN_FILE${ECLR}"
    echo -e "    ${RED}Please request git-token from iotech.systems in order to complete this setup.${ECLR}"
@@ -25,6 +25,11 @@ if [ ! -d "$GHROOT" ]; then
 fi
 
 cd "$GHROOT" || exit 1
+
+
+# -- create py venv --
+create_venv
+
 
 # -- pull github repos --
 clone_repo "$GTOKEN" "$GH_CORE"

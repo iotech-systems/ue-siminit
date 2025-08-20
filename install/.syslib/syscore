@@ -4,6 +4,23 @@
 echo -e "${BLDGRN} + lib-file: .syslib/syscore${ECLR}"
 
 
+create_venv () {
+   echo "" && echo -e " ${BLDBLU}(( create_venv ))${ECLR}"
+   echo "   cwd: $(pwd)"
+
+   pydir311="pyvenvs/py3.11"
+   mkdir "$pydir311"  -p
+   if [ ! -d "$pydir311" ]; then
+      echo "" && echo -e "  ${RED}<< FOLDER_NOT_FOUND: $pydir311 >>${ECLR}"
+      exit 1
+   fi
+
+   echo "" && echo -e "  ${GRN}[ FOLDER_FOUND: $pydir311 ]${ECLR}"
+
+
+}
+
+
 clone_repo () {
    echo "" && echo -e " ${BLDBLU}(( clone_repo ))${ECLR}"
    echo "   token: $1"
