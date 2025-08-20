@@ -17,9 +17,27 @@ create_venv () {
 
    echo "" && echo -e "  ${GRN}[ FOLDER_FOUND: $pydir311 ]${ECLR}"
 
+#   if ! [ -x "$(python3.11 -v foo)" ]; then
+#      echo "python3.11 not installed"
+#      exit 2
+#   fi
+
+   test -x "$(which python3.11x)"
+
    echo "" && echo "[ INSTALLING PYTHON v3.11 ]" && echo ""
-   HERE_IS_PY311=$(whereis "python3.11")
-   echo -e "  ${BLDGRN}HERE_IS_PY311: $HERE_IS_PY311${ECLR}"
+   CMD_TO_FIND="python3.11"
+   HERE_IS_PY311=$(whereis "$CMD_TO_FIND")
+   echo -e "  ${BLDGRN}HERE_IS_PY311 / $HERE_IS_PY311${ECLR}"
+
+   blnk=""
+    # shellcheck disable=SC2001
+   buff=$(echo "$HERE_IS_PY311" | sed "s/$CMD_TO_FIND/$blnk/")
+   echo "buff: $buff"
+
+   #   if []
+   add-apt-repository ppa:deadsnakes/ppa
+   apt update
+   apt install python3.11
 
 }
 
