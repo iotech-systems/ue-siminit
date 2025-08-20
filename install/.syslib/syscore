@@ -4,18 +4,49 @@
 echo -e "${BLDGRN} + lib-file: .syslib/syscore${ECLR}"
 
 
-create_venv () {
-   echo "" && echo -e " ${BLDBLU}(( create_venv ))${ECLR}"
+
+is_py3_11_installed () {
+
+   echo "" && echo -e " ${BLDBLU}(( is_py3_11_installed ))${ECLR}"
+
+
+   return 0
+}
+
+
+install_py3_11 () {
+
+   echo "" && echo -e " ${BLDBLU}(( install_py3_11 ))${ECLR}"
    echo "   cwd: $(pwd)"
 
-   pydir311="pyvenvs/py3.11"
-   mkdir "$pydir311"  -p
-   if [ ! -d "$pydir311" ]; then
-      echo "" && echo -e "  ${RED}<< FOLDER_NOT_FOUND: $pydir311 >>${ECLR}"
-      exit 1
+   return 0
+
+}
+
+# ---
+#
+#
+create_py_venv () {
+
+   echo "" && echo -e " ${BLDBLU}(( create_py_venv ))${ECLR}"
+   echo "   cwd: $(pwd)"
+
+   PY_3_11_INSTALLED=$(is_py3_11_installed)
+   if [[ $PY_3_11_INSTALLED  == 0 ]]; then
+      install_py3_11
    fi
 
-   echo "" && echo -e "  ${GRN}[ FOLDER_FOUND: $pydir311 ]${ECLR}"
+
+   pydir311="pyvenvs/py3.11"
+   if [ -d "$pydir311" ]; then
+      echo "" && echo -e "  ${GRN}<< FOLDER__FOUND: $pydir311 >>${ECLR}"
+      echo -e "    ${GRN}PYTHONv3.11 venv seems to installed!${ECLR}"
+      sleep 4
+   else
+      echo "" && echo -e "  ${RED}[ FOLDER_NOT_FOUND: $pydir311 ]${ECLR}"
+      sleep 2
+      mkdir "$pydir311"  -p
+   fi
 
 #   if ! [ -x "$(python3.11 -v foo)" ]; then
 #      echo "python3.11 not installed"
@@ -39,10 +70,13 @@ create_venv () {
    apt update
    apt install python3.11
 
+   return 0
+
 }
 
 
 clone_repo () {
+
    echo "" && echo -e " ${BLDBLU}(( clone_repo ))${ECLR}"
    echo "   token: $1"
    echo "   url: $2"
@@ -57,4 +91,5 @@ clone_repo () {
    echo -e "${ECLR}"
 
    return 0
+
 }

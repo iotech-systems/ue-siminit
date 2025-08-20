@@ -28,7 +28,7 @@ cd "$GHROOT" || exit 1
 
 
 # -- create py venv --
-create_venv
+create_py_venv
 
 
 # -- pull github repos --
