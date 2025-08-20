@@ -17,6 +17,9 @@ create_venv () {
 
    echo "" && echo -e "  ${GRN}[ FOLDER_FOUND: $pydir311 ]${ECLR}"
 
+   echo "" && echo "[ INSTALLING PYTHON v3.11 ]" && echo ""
+   HERE_IS_PY311=$(whereis "python3.11")
+   echo -e "  ${BLDGRN}HERE_IS_PY311: $HERE_IS_PY311${ECLR}"
 
 }
 
