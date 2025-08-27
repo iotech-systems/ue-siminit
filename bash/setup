@@ -1,0 +1,45 @@
+#!/bin/bash
+
+
+source .syslib/data
+source .syslib/syscore
+
+
+echo ""
+if [ ! -f "$TOKEN_FILE" ]; then
+   echo -e "  ${BLDRED}TOKEN_FILE_NOT_FOUND: $TOKEN_FILE${ECLR}"
+   echo -e "    ${RED}Please request git-token from iotech.systems in order to complete this setup.${ECLR}"
+   echo ""
+   exit 1
+fi
+
+
+GTOKEN=$(cat "token-file")
+echo " -> GTOKEN: $GTOKEN"
+
+# -- move to github folder --
+GHROOT=$(cat "github-root")
+if [ ! -d "$GHROOT" ]; then
+   echo -e "  ${BLDRED}FOLDER_NOT_FOUND: $GHROOT${ECLR}" && echo ""
+   exit 2
+fi
+
+cd "$GHROOT" || exit 1
+
+
+# -- create py venv --
+create_py_venv
+
+
+# -- clone github repos --
+clone_repo "$GTOKEN" "$GH_CORE"
+clone_repo "$GTOKEN" "$GH_PYEN"
+clone_repo "$GTOKEN" "$GH_SMUI"
+clone_repo "$GTOKEN" "$GH_SBRD"
+clone_repo "$GTOKEN" "$GH_SAPI"
+clone_repo "$GTOKEN" "$GH_SBSH"
+
+
+echo ""
+echo " -- setup end -- "
+echo ""

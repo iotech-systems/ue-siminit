@@ -93,3 +93,21 @@ clone_repo () {
    return 0
 
 }
+
+
+sync_repo () {
+
+   echo "" && echo -e " ${BLDBLU}(( pull_repo ))${ECLR}"
+   echo "   token: $1"
+   echo "   url: $2"
+   echo "   cwd: $(pwd)"
+
+   for fl in . ; do
+      echo "f: $fl"
+   done
+
+
+   echo "" 
+   return 0
+
+}
