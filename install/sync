@@ -1,8 +1,12 @@
 #!/bin/bash
 
+
+clear
+echo -e "\e[0;90m"
 source .syslib/data
 source .syslib/utils
 source .syslib/syscore
+echo -e "\e[0;0m"
 
 
 on_exit () {
@@ -41,9 +45,12 @@ for d in $(ls); do
    if [[ "$d" = ue-*  ]]; then
       echo "" && echo "ue: $d"
       cd "$d"
+      echo_info "dir: $(pwd)"
+      echo -e "\e[0;90m"
+      git remote -v
       git pull -f
+      echo -e "\e[0;0m"
       cd ..
       sleep 1
    fi
 done
-
