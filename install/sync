@@ -5,6 +5,16 @@ source .syslib/utils
 source .syslib/syscore
 
 
+on_exit () {
+   echo ""
+   echo " -- sync end -- "
+   echo ""
+}
+
+
+trap on_exit EXIT
+
+
 echo ""
 if [ ! -f "$TOKEN_FILE" ]; then
    echo -e "  ${BLDRED}TOKEN_FILE_NOT_FOUND: $TOKEN_FILE${ECLR}"
@@ -37,7 +47,3 @@ for d in $(ls); do
    fi
 done
 
-
-echo ""
-echo " -- sync end -- "
-echo ""
