@@ -1,0 +1,138 @@
+#!/bin/bash
+
+clear
+echo ""
+
+echo -e "\e[0;90m"
+source .syslib/data
+source .syslib/utils
+source .syslib/syscore
+source ./setup-ini
+echo -e "\e[0m"
+
+
+on_exit () {
+   echo_call "on_exit"
+   echo_dbg " -- setup end -- "
+   echo ""
+}
+
+
+trap on_exit EXIT
+
+
+echo ""
+if [ ! -f "$TOKEN_FILE" ]; then
+   echo -e "  ${BLDRED}TOKEN_FILE_NOT_FOUND: $TOKEN_FILE${ECLR}"
+   echo -e "    ${RED}Please request git-token from iotech.systems in order to complete this setup.${ECLR}"
+   echo ""
+   exit 1
+fi
+
+
+GTOKEN=$(cat "token-file")
+echo_pos "[ GTOKEN: $GTOKEN ]"
+
+# -- move to github folder --
+GHROOT=$(cat "github-root")
+if [ ! -d "$GHROOT" ]; then
+   echo -e "  ${BLDRED}FOLDER_NOT_FOUND: $GHROOT${ECLR}" && echo ""
+   exit 2
+fi
+
+
+START_FLD=$(pwd)
+cd "$GHROOT" || exit 1
+echo_pos "[ SYSTEM INSTALL FOLDER: $GHROOT ]"
+
+
+# PY_VENV_FOLDER="py3.13"
+# PY_VENV_VER_SETUP="python 3.13"
+# -- create py venv --
+create_py_venv "$PY_VENV_VER_SETUP" "$PY_VENV_FOLDER"
+py_venv_err=$?
+if (( py_venv_err != 0 )); then
+   echo_neg "UNABLE_TO_INSTALL_PY_VENV: $PY_VENV_VER_SETUP in $PY_VENV_FOLDER"
+   exit 1
+else
+   echo_pos "PY_VENV_INSTALLED: $PY_VENV_VER_SETUP in $PY_VENVS_ROOT/$PY_VENV_FOLDER"
+fi
+
+
+pip_install_py_venv
+pip_err_code=$?
+
+
+echo ""
+echo_dbg "[ CLONING_GITHUB_REPOS ]"
+GTOKEN=$(cat "token-file")
+echo_pos "[ GTOKEN: $GTOKEN ]"
+
+
+cd "$GHROOT" || exit 1
+echo_dbg "$(pwd)"
+
+
+
+# -- clone github repos --
+# -- clone shared/core repo
+clone_repo "$GTOKEN" "$GH_CORE"
+# -- clone pyengine repo
+clone_repo "$GTOKEN" "$GH_PYEN"
+# -- clone sim UI repo
+clone_repo "$GTOKEN" "$GH_SMUI"
+# -- clone sim bridge repo
+clone_repo "$GTOKEN" "$GH_SBRD"
+# -- clone sim api repo
+clone_repo "$GTOKEN" "$GH_SAPI"
+# -- clone sim bash repo
+clone_repo "$GTOKEN" "$GH_SBSH"
+
+
+echo ""
+echo_pos "[ CLONING_GITHUB_REPOS_DONE ]"
+echo ""
+
+
+echo_info "Installing SIMCLI"
+
+
+PYTHON_PATH="$GHROOT/ue-core"
+echo_dbg "[ PYTHON_PATH: $PYTHON_PATH ]"
+if [[ ! -d "$PYTHON_PATH" ]]; then
+   echo_neg "PYTHON_PATH_NOT_FOUND: $PYTHON_PATH"
+else
+   export PYTHONPATH="$PYTHON_PATH"
+fi
+
+SIM_CLI="$PYTHON_PATH/cli/simcli"
+BIN_FLD="$GHROOT/$PY_VENVS_ROOT/$PY_VENV_FOLDER/bin"
+
+echo_dbg "[ BIN_FLD: $BIN_FLD ]"
+ln -s "$SIM_CLI" "$BIN_FLD/simcli" -f
+echo ""
+# ls -ls "$BIN_FLD"
+# echo ""
+
+# write PATH to cli folder into the venv setup
+# url: https://www.aocks.com/posts/managing-paths-in-python-virtual-environments/
+pth_fld="$GHROOT/$PY_VENVS_ROOT/$PY_VENV_FOLDER/lib/python3.13/site-packages"
+[[ ! -d "$pth_fld" ]] && echo_neg "PATH_NOT_FOUND: $pth_fld"
+
+# "/eu-core-cli.pth"
+pth_file_path=$pth_fld/eu-core-cli.pth
+# echo_dbg "pth-file-path: $pth_file_path"
+# echo "$PYTHON_PATH/cli" > $pth_file_path
+
+# deactivate
+# echo_dbg "SYS-PATH: $PATH"
+# check_venv_py_ver "$GHROOT/$PY_VENVS_ROOT/$PY_VENV_FOLDER"
+# echo_dbg "VENV-PATH: $PATH"
+
+echo ""
+sleep 1
+echo_pos "[[ TESTING_SIMCLI: if you see text | iotech.systems - simcli | below -> simcli is installed in VENV ! ]]"
+echo -e "$YLW"
+simcli --help
+echo -e "$ECLR"
+echo ""

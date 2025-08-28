@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+echo "loading: .syslib/utils"
+
+
+echo_color () {
+   echo -e "$1$2$ECLR"
+}
+
+
+echo_pos () {
+   echo -e "${GRN}  + $1 $ECLR"
+}
+
+
+echo_neg () {
+   echo -e "${RED}  - $1 $ECLR"
+}
+
+
+echo_dbg () {
+   echo -e "${DBG}    > $1 $ECLR"
+}
+
+
+echo_call () {
+   echo "" && echo -e "$BLU(( $1 )) $ECLR"
+}
+
+
+echo_info () {
+   echo -e "${BLDBLU}INFO: " && echo -e "${BLU}  * $1 ${ECLR}"
+   echo ""
+}
+
+
+echo "load: OK"

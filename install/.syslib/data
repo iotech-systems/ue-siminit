@@ -1,27 +1,37 @@
 #!/bin/bash
 
 
+echo "loading: .syslib/data"
+
+
 RED_CODE="31"
 GRN_CODE="32"
+YLW_CODE="33"
 BLU_CODE="34"
 GRY_CODE="90"
+LGRY_CODE="37"
 
 RED="\e[0;${RED_CODE}m"
 GRN="\e[0;${GRN_CODE}m"
+YLW="\e[0;${YLW_CODE}m"
 BLU="\e[0;${BLU_CODE}m"
 GRY="\e[0;${GRY_CODE}m"
+LGRY="\e[0;${LGRY_CODE}m"
+
+# -- debug/trace string --
+DBG="\e[3;${LGRY_CODE}m"
+
 BLDRED="\e[1;${RED_CODE}m"
 BLDGRN="\e[1;${GRN_CODE}m"
 BLDBLU="\e[1;${BLU_CODE}m"
+
 ITALICRED="\e[3;${RED}m"
 ECLR="\e[0m"
 
+START_FLD=""
+PYTHON_PATH=""
 TOKEN_FILE="token-file"
-
-clear
-echo ""
-echo -e "${BLDGRN} + lib-file: .syslib/data${ECLR}"
-
+PIP_INSTALL_FLD="pip-install-list"
 
 # -- github repos --
 GH_CORE="https://TOKEN@github.com/iotech-systems/ue-core.git"
@@ -30,3 +40,6 @@ GH_SMUI="https://TOKEN@github.com/iotech-systems/ue-simui.git"
 GH_SBRD="https://TOKEN@github.com/iotech-systems/ue-simbridge.git"
 GH_SAPI="https://TOKEN@github.com/iotech-systems/ue-simapi.git"
 GH_SBSH="https://TOKEN@github.com/iotech-systems/ue-simbash.git"
+
+
+echo "load: OK"
