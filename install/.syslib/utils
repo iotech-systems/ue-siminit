@@ -19,6 +19,11 @@ echo_neg () {
 }
 
 
+echo_warning () {
+   echo -e "${YLW}  - $1 $ECLR"
+}
+
+
 echo_dbg () {
    echo -e "${DBG}    > $1 $ECLR"
 }

@@ -187,10 +187,47 @@ clone_repo () {
 
    # shellcheck disable=SC2001
    # echo -e "   ${BLU}$repo_url${ECLR}"
+   local err_code
    echo -e "${GRY}"
    git clone "$repo_url"
-   echo -e "${ECLR}"
+   err_code=$?
+   if (( err_code == 0 )); then
+      echo_pos "[ ERR: $err_code | OK_CLONING_REPO: $repo_url ]"
+   elif (( err_code != 0 )) && (( err_code == 128 )); then
+      echo_warning "[ ERR: $err_code | ERROR_CLONING_REPO: $repo_url ]"
+   else
+      echo_neg "[ ERR: $err_code | ERROR_CLONING_REPO: $repo_url ]"
+   fi
 
+   echo -e "${ECLR}"
+   return 0
+
+}
+
+
+clone_repos () {
+   echo_call "clone_reps"
+   # -- -- --
+
+   echo_dbg "   gtoken: $1"
+   echo_dbg "   cwd: $(pwd)"
+
+   echo "" && echo ""
+   echo_pos "[ INSTALLING_CORE_REPOS ]"
+   for repo in ${GH_REPOS[@]}
+   do
+      clone_repo $1 "$repo"
+   done
+
+   echo "" && echo ""
+   echo_pos "[ INSTALLING_CUSTOM_REPOS ]"
+   for repo in ${GH_CUSTOM_REPOS[@]}
+   do
+      clone_repo $1 "$repo"
+   done
+
+
+   echo ""
    return 0
 
 }

@@ -30,16 +30,15 @@ ECLR="\e[0m"
 
 START_FLD=""
 PYTHON_PATH=""
-TOKEN_FILE="token-file"
-PIP_INSTALL_FLD="pip-install-list"
+TOKEN_FILE="conf/token-file"
+PIP_INSTALL_FLD="conf/pip-install-list"
 
 # -- github repos --
-GH_CORE="https://TOKEN@github.com/iotech-systems/ue-core.git"
-GH_PYEN="https://TOKEN@github.com/iotech-systems/ue-pyengine.git"
-GH_SMUI="https://TOKEN@github.com/iotech-systems/ue-simui.git"
-GH_SBRD="https://TOKEN@github.com/iotech-systems/ue-simbridge.git"
-GH_SAPI="https://TOKEN@github.com/iotech-systems/ue-simapi.git"
-GH_SBSH="https://TOKEN@github.com/iotech-systems/ue-simbash.git"
-
+# GH_CORE="https://TOKEN@github.com/iotech-systems/ue-core.git"
+# GH_PYEN="https://TOKEN@github.com/iotech-systems/ue-pyengine.git"
+# GH_SMUI="https://TOKEN@github.com/iotech-systems/ue-simui.git"
+# GH_SBRD="https://TOKEN@github.com/iotech-systems/ue-simbridge.git"
+# GH_SAPI="https://TOKEN@github.com/iotech-systems/ue-simapi.git"
+# GH_SBSH="https://TOKEN@github.com/iotech-systems/ue-simbash.git"
 
 echo "load: OK"

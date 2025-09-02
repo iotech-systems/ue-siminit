@@ -1,13 +1,18 @@
 #!/bin/bash
 
+
 clear
 echo ""
 
+
 echo -e "\e[0;90m"
+# -- config files --
+source conf/github-repos
+source conf/setup-ini
+# -- code files --
 source .syslib/data
 source .syslib/utils
 source .syslib/syscore
-source ./setup-ini
 echo -e "\e[0m"
 
 
@@ -30,11 +35,11 @@ if [ ! -f "$TOKEN_FILE" ]; then
 fi
 
 
-GTOKEN=$(cat "token-file")
+GTOKEN=$(cat "$TOKEN_FILE")
 echo_pos "[ GTOKEN: $GTOKEN ]"
 
 # -- move to github folder --
-GHROOT=$(cat "github-root")
+GHROOT=$(cat "conf/github-root")
 if [ ! -d "$GHROOT" ]; then
    echo -e "  ${BLDRED}FOLDER_NOT_FOUND: $GHROOT${ECLR}" && echo ""
    exit 2
@@ -65,7 +70,6 @@ pip_err_code=$?
 
 echo ""
 echo_dbg "[ CLONING_GITHUB_REPOS ]"
-GTOKEN=$(cat "token-file")
 echo_pos "[ GTOKEN: $GTOKEN ]"
 
 
@@ -73,20 +77,27 @@ cd "$GHROOT" || exit 1
 echo_dbg "$(pwd)"
 
 
-
 # -- clone github repos --
 # -- clone shared/core repo
-clone_repo "$GTOKEN" "$GH_CORE"
-# -- clone pyengine repo
-clone_repo "$GTOKEN" "$GH_PYEN"
-# -- clone sim UI repo
-clone_repo "$GTOKEN" "$GH_SMUI"
-# -- clone sim bridge repo
-clone_repo "$GTOKEN" "$GH_SBRD"
-# -- clone sim api repo
-clone_repo "$GTOKEN" "$GH_SAPI"
-# -- clone sim bash repo
-clone_repo "$GTOKEN" "$GH_SBSH"
+# clone_repo "$GTOKEN" "$GH_CORE"
+# # -- clone pyengine repo
+# clone_repo "$GTOKEN" "$GH_PYEN"
+# # -- clone sim UI repo
+# clone_repo "$GTOKEN" "$GH_SMUI"
+# # -- clone sim bridge repo
+# clone_repo "$GTOKEN" "$GH_SBRD"
+# # -- clone sim api repo
+# clone_repo "$GTOKEN" "$GH_SAPI"
+# # -- clone sim bash repo
+# clone_repo "$GTOKEN" "$GH_SBSH"
+
+# for repo in ${GH_REPOS[@]}
+# do
+#    echo $repo
+# done
+
+clone_repos "$GTOKEN"
+
 
 
 echo ""
