@@ -7,15 +7,6 @@ echo "loading: conf/github-repos"
 declare -a GH_REPOS
 declare -a GH_CUSTOM_REPOS
 
-# -- core github repos --
-# GH_CORE="https://TOKEN@github.com/iotech-systems/ue-core.git"
-# $GH_REPOS[0] = $GH_CORE 
-
-# GH_PYEN="https://TOKEN@github.com/iotech-systems/ue-pyengine.git"
-# GH_SMUI="https://TOKEN@github.com/iotech-systems/ue-simui.git"
-# GH_SBRD="https://TOKEN@github.com/iotech-systems/ue-simbridge.git"
-# GH_SAPI="https://TOKEN@github.com/iotech-systems/ue-simapi.git"
-# GH_SBSH="https://TOKEN@github.com/iotech-systems/ue-simbash.git"
 
 # -- do not change any of these; please :) --
 GH_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-core.git") 
@@ -27,7 +18,7 @@ GH_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-simbash.git")
 
 # -- custom repos --
 GH_CUSTOM_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-huneedsims.git")
-GH_CUSTOM_REPOS+=("https://github.com/iotech-systems/ue-vdsims.git")
+GH_CUSTOM_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-vdsims.git")
 
 
 echo "load: OK"
