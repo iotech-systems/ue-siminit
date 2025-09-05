@@ -28,11 +28,11 @@ if [ ! -f "$TOKEN_FILE" ]; then
 fi
 
 
-GTOKEN=$(cat "token-file")
+GTOKEN=$(cat "conf/token-file")
 echo " -> GTOKEN: $GTOKEN"
 
 # -- move to github folder --
-GHROOT=$(cat "github-root")
+GHROOT=$(cat "conf/github-root")
 if [ ! -d "$GHROOT" ]; then
    echo -e "  ${BLDRED}FOLDER_NOT_FOUND: $GHROOT${ECLR}" && echo ""
    exit 2
