@@ -2,3 +2,4 @@
 pygame
 termcolor
 setproctitle
+pyserial

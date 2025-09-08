@@ -4,8 +4,77 @@
 echo "loading: .syslib/syscore"
 
 
+check_custom_dependencies () {   
+   echo_call
+   # -- -- --
+
+   # -- -- check custom folder -- --
+   local CUST_DPATH
+   CUST_DPATH=$(cat conf/custom-dpath)
+   echo_dbg "CUST_DPATH: $CUST_DPATH"
+   if [ ! -d "$CUST_DPATH" ]; then
+      echo_pnf $CUST_DPATH
+      exit 1
+   else
+      echo_pos "$CUST_DPATH"
+   fi
+
+   # -- check gtoken file --
+   local gtoken_file
+   gtoken_file="$CUST_DPATH/gtoken"
+   echo_dbg "gtoken-fpath: $gtoken_file"
+   if [ ! -f "$gtoken_file" ]; then
+      echo_pnf "$gtoken_file"
+      exit 1
+   else
+      echo_pos "$gtoken_file"
+      GTOKEN=$(cat "$gtoken_file")
+      echo_dbg "GTOKEN: $GTOKEN"
+   fi
+
+   # -- check custom repos file --
+   local custom_repos_file
+   custom_repos_file="$CUST_DPATH/custom-repos"
+   echo_dbg "custom-repos-fpath: $custom_repos_file"
+   if [ ! -f "$custom_repos_file" ]; then
+      echo_pnf "$custom_repos_file"
+      exit 1
+   else 
+      echo_pos "$custom_repos_file"
+      source "$custom_repos_file"
+      for repo in ${GH_CUSTOM_REPOS[@]}; do
+         echo_dbg "repo: $repo"
+      done
+   fi
+
+   # -- check github root folder --
+   local github_root_fld
+   github_root_fld="$CUST_DPATH/github-root"
+   echo_dbg "github_root_fld: $github_root_fld"
+   if [ ! -f "$github_root_fld" ]; then
+      echo_pnf "$github_root_fld"
+      exit 1
+   else 
+      echo_pos "$github_root_fld"
+      GHROOT=$(cat "$github_root_fld")
+      echo_dbg "GHROOT: $GHROOT"
+      if [ ! -d "$GHROOT" ]; then
+         echo_pnf "$GHROOT"
+         exit 1
+      else
+         echo_pos "$GHROOT"
+      fi
+   fi
+
+   echo_call_end
+   return 0
+
+}
+
+
+
 is_py_ver_installed () {
-   echo_call "is_py_ver_installed"
+   echo_call
    # -- -- --
 
    local py_ver
@@ -22,14 +91,14 @@ is_py_ver_installed () {
    buff=$($py_ver --version)
    echo_dbg "version: $buff"
 
-   echo ""
+   echo_call_end
    return 0
 
 }
 
 
 setup_py_venv () {
-   echo_call "setup_py_venv"
+   echo_call
    # -- -- --
    
    local py_ver
@@ -43,14 +112,14 @@ setup_py_venv () {
    echo_dbg "installing venv: $py_ver in $py_ver_fld"
    "$py_ver" -m venv "$py_ver_fld"
 
-   echo ""
+   echo_call_end
    return 0
 
 }
 
 
 pip_install_py_venv () {
-   echo_call "pip_install_py_venv"
+   echo_call
    # -- -- --
 
    local buff0
@@ -71,15 +140,14 @@ pip_install_py_venv () {
    echo -e "\e[0;0m"
    pip_error=$?
 
-
-   echo ""
+   echo_call_end
    return 0
 
 }
 
 
 check_venv_py_ver () {
-   echo_call "check_venv_py_ver"
+   echo_call
    # -- -- --
 
    [[ "$1" == "" ]] && echo_neg "missing arg1"
@@ -117,7 +185,7 @@ check_venv_py_ver () {
    echo_dbg "WHICH ( python3 ):"
    echo_dbg "  -> $buff1"
 
-   echo ""
+   echo_call_end
    return 0
 
 }
@@ -126,7 +194,7 @@ check_venv_py_ver () {
 # ---
 # "$PY_VENV_VER_SETUP" "$PY_VENV_FOLDER"
 create_py_venv () {
-   echo_call "create_py_venv"
+   echo_call
    # -- -- -
 
    local py_version
@@ -169,24 +237,43 @@ create_py_venv () {
       check_venv_py_ver "$py_venv_fld_path"
    fi
 
-
+   echo_call_end
    return 0
 
 }
 
 
 clone_repo () {
-   echo_call "clone_repo"
+   echo_call
    # -- -- --
 
-   repo_url=$(echo "$2" | sed "s/TOKEN/$1/")
+   local gtok
+   gtok="$1"
+   echo_dbg "   gtoken: $gtok"
 
-   echo_dbg "   gtoken: $1"
+   local gurl
+   gurl="$2"
+   echo_dbg "   gurl: $gurl"
+
+
+   # test url for keyword TOKEN   
+   if [[ "$gurl" =~ .*TOKEN*  ]]; then
+      echo_dbg "$gurl"
+   else 
+      local turl
+      turl="https://TOKEN@github.com/iotech-systems/ue-core.git"
+      echo_neg "NO_'TOKEN'_IN_REPO_URL: $gurl"
+      echo_info "You must add keyword TOKEN to repo URL\n    [ CORRECT-FORMAT: $turl ]"
+      echo_info "You must fix this and restart the process!"
+      exit 1
+   fi
+
+   repo_url=$(echo "$gurl" | sed "s/TOKEN/$gtok/")
+
    echo_dbg "   repo-url: $repo_url"
    echo_dbg "   cwd: $(pwd)"
 
    # shellcheck disable=SC2001
-   # echo -e "   ${BLU}$repo_url${ECLR}"
    local err_code
    echo -e "${GRY}"
    git clone "$repo_url"
@@ -200,13 +287,14 @@ clone_repo () {
    fi
 
    echo -e "${ECLR}"
+   echo_call_end
    return 0
 
 }
 
 
-clone_repos () {
-   echo_call "clone_reps"
+clone_def_repos () {
+   echo_call
    # -- -- --
 
    echo_dbg "   gtoken: $1"
@@ -214,28 +302,38 @@ clone_repos () {
 
    echo "" && echo ""
    echo_pos "[ INSTALLING_CORE_REPOS ]"
-   for repo in ${GH_REPOS[@]}
-   do
-      clone_repo $1 "$repo"
+   for repo in ${GH_REPOS[@]}; do
+      clone_repo "$1" "$repo"
    done
+
+   echo_call_end
+   return 0
+
+}
+
+
+clone_cust_repos () {
+   echo_call
+   # -- -- --
+   
+   echo_dbg "   gtoken: $1"
+   echo_dbg "   cwd: $(pwd)"
 
    echo "" && echo ""
    echo_pos "[ INSTALLING_CUSTOM_REPOS ]"
-   for repo in ${GH_CUSTOM_REPOS[@]}
-   do
+   for repo in ${GH_CUSTOM_REPOS[@]}; do
       clone_repo $1 "$repo"
    done
 
-
-   echo ""
+   echo_call_end
    return 0
 
 }
 
 
 sync_repo () {
+   echo_call
 
-   echo "" && echo -e " ${BLDBLU}(( pull_repo ))${ECLR}"
    echo "   token: $1"
    echo "   url: $2"
    echo "   cwd: $(pwd)"
@@ -244,8 +342,7 @@ sync_repo () {
       echo "f: $fl"
    done
 
-
-   echo "" 
+   echo_call_end
    return 0
 
 }

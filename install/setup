@@ -26,33 +26,20 @@ on_exit () {
 trap on_exit EXIT
 
 
-echo ""
-if [ ! -f "$TOKEN_FILE" ]; then
-   echo -e "  ${BLDRED}TOKEN_FILE_NOT_FOUND: $TOKEN_FILE${ECLR}"
-   echo -e "    ${RED}Please request git-token from iotech.systems in order to complete this setup.${ECLR}"
-   echo ""
+check_custom_dependencies
+deps_check_err=$?
+if (( $deps_check_err != 0 )); then
+   echo_neg "ERROR_CHECKING_CUSTOM_DEPENDENCIES"
    exit 1
+else
+   echo_pos "CHECKING_CUSTOM_DEPENDENCIES_OK"
 fi
-
-
-GTOKEN=$(cat "$TOKEN_FILE")
-echo_pos "[ GTOKEN: $GTOKEN ]"
-
-# -- move to github folder --
-GHROOT=$(cat "conf/github-root")
-if [ ! -d "$GHROOT" ]; then
-   echo -e "  ${BLDRED}FOLDER_NOT_FOUND: $GHROOT${ECLR}" && echo ""
-   exit 2
-fi
-
 
 START_FLD=$(pwd)
 cd "$GHROOT" || exit 1
 echo_pos "[ SYSTEM INSTALL FOLDER: $GHROOT ]"
 
 
-# PY_VENV_FOLDER="py3.13"
-# PY_VENV_VER_SETUP="python 3.13"
 # -- create py venv --
 create_py_venv "$PY_VENV_VER_SETUP" "$PY_VENV_FOLDER"
 py_venv_err=$?
@@ -68,40 +55,22 @@ pip_install_py_venv
 pip_err_code=$?
 
 
-echo ""
 echo_dbg "[ CLONING_GITHUB_REPOS ]"
 echo_pos "[ GTOKEN: $GTOKEN ]"
-
-
 cd "$GHROOT" || exit 1
 echo_dbg "$(pwd)"
 
+echo ""
+echo_bylw "= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="
+clone_def_repos "$GTOKEN"
 
-# -- clone github repos --
-# -- clone shared/core repo
-# clone_repo "$GTOKEN" "$GH_CORE"
-# # -- clone pyengine repo
-# clone_repo "$GTOKEN" "$GH_PYEN"
-# # -- clone sim UI repo
-# clone_repo "$GTOKEN" "$GH_SMUI"
-# # -- clone sim bridge repo
-# clone_repo "$GTOKEN" "$GH_SBRD"
-# # -- clone sim api repo
-# clone_repo "$GTOKEN" "$GH_SAPI"
-# # -- clone sim bash repo
-# clone_repo "$GTOKEN" "$GH_SBSH"
-
-# for repo in ${GH_REPOS[@]}
-# do
-#    echo $repo
-# done
-
-clone_repos "$GTOKEN"
-
-
+echo_bylw "= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="
+clone_cust_repos "$GTOKEN"
 
 echo ""
 echo_pos "[ CLONING_GITHUB_REPOS_DONE ]"
+echo ""
+echo_bylw "= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =" 
 echo ""
 
 

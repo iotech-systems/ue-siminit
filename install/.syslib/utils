@@ -4,6 +4,12 @@
 echo "loading: .syslib/utils"
 
 
+
+echo_bylw () {
+   echo -e "${BLDYLW}$1$ECLR"
+}
+
+
 echo_color () {
    echo -e "$1$2$ECLR"
 }
@@ -30,13 +36,29 @@ echo_dbg () {
 
 
 echo_call () {
-   echo "" && echo -e "$BLU(( $1 )) $ECLR"
+   echo "" && echo -e "$BLU(( ${FUNCNAME[1]} )) $ECLR"
+}
+
+
+# echo_call () {
+#    echo "" && echo -e "$BLU(( $1 )) $ECLR"
+# }
+
+
+echo_call_end () {
+   echo -e "${GRY} -- callend/ ${FUNCNAME[1]} --$ECLR"
+   echo ""
 }
 
 
 echo_info () {
    echo -e "${BLDBLU}INFO: " && echo -e "${BLU}  * $1 ${ECLR}"
    echo ""
+}
+
+
+echo_pnf () {
+   echo_neg "PATH_NOT_FOUND: $1"
 }
 
 
