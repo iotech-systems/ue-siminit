@@ -6,6 +6,36 @@ echo "loading: .syslib/syscore"
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+check_logs () {
+   echo_call
+   # -- -- --
+
+   local log_file_pyvenv
+   log_file_pyvenv=".logs/py3venv-run"
+
+   if [ ! -f "$log_file_pyvenv" ]; then
+      echo_pnf "$log_file_pyvenv"
+      echo_call_end
+      return 1
+   fi
+
+   local fbuff
+   fbuff=$(cat "$log_file_pyvenv")
+   if [[ "$fbuff" -ne  "PYTHON3-VENV-OK" ]]; then
+      echo_dbg "BAD_PY3_VENV_RUN: $buff"
+      return 2
+   fi
+
+   echo_dbg "PY3_VENV_RUN: $fbuff"
+   echo_pos "$fbuff"
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 set_custom_dpad () {
    echo_call
    # -- -- --

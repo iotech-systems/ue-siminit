@@ -26,6 +26,17 @@ trap on_exit EXIT
 
 # -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
+
+check_logs
+err_code=$?
+if (( $err_code != 0 )); then
+   echo_neg "check-logs-error"
+   exit 1
+else
+   echo_dbg "check-logs-ok"
+fi
+
+
 check_custom_dependencies
 deps_check_err=$?
 if (( $deps_check_err != 0 )); then
