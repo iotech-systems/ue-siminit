@@ -4,3 +4,4 @@ termcolor
 setproctitle
 pyserial
 watchdog
+jsbsim
