@@ -1,5 +1,7 @@
 
+python3-venv
 pygame
 termcolor
 setproctitle
 pyserial
+watchgod
