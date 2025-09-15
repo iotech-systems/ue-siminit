@@ -4,6 +4,85 @@
 echo "loading: .syslib/syscore"
 
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+set_custom_dpad () {
+   echo_call
+   # -- -- --
+
+   local cust_dpath
+   cust_dpath=$(cat conf/custom-dpath)
+   echo_dbg "checking cust_dpath: $cust_dpath"
+
+   if [ ! -d "$cust_dpath" ]; then
+      echo_pnf "$cust_dpath"
+      return 1
+   fi
+
+   echo_pok "$cust_dpath"
+   GLB_CUST_DPATH="$cust_dpath"
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+set_gtoken () {
+   echo_call
+   # -- -- --
+
+   local gtoken_file
+   gtoken_file="$GLB_CUST_DPATH/gtoken"
+   echo_dbg "gtoken-fpath: $gtoken_file"
+   if [ ! -f "$gtoken_file" ]; then
+      echo_pnf "$gtoken_file"
+      exit 1
+   fi
+
+   echo_pos "$gtoken_file"
+   GTOKEN=$(cat "$gtoken_file")
+   echo_dbg "GTOKEN: $GTOKEN"
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+set_github_dpath () {
+   echo_call
+   # -- -- --
+
+   local github_root
+   github_root="$GLB_CUST_DPATH/github-root"
+   echo_dbg "checking github_root: $github_root"
+
+   if [ ! -f "$github_root" ]; then
+      echo_pnf "$github_root"
+      exit 1
+   fi
+
+   echo_pos "$github_root"
+   GLB_GITHUB_DPATH=$(cat "$github_root")
+   echo_dbg "GLB_GITHUB_DPATH: $GLB_GITHUB_DPATH"
+
+   if [ ! -d "$GLB_GITHUB_DPATH" ]; then
+      echo_pnf "$GLB_GITHUB_DPATH"
+      return 1
+   fi
+
+   echo_pok "$GLB_GITHUB_DPATH"
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 check_custom_dependencies () {   
    echo_call
    # -- -- --

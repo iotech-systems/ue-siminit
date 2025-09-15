@@ -4,7 +4,6 @@
 clear
 echo ""
 
-
 echo -e "\e[0;90m"
 # -- config files --
 source conf/github-repos
@@ -25,6 +24,7 @@ on_exit () {
 
 trap on_exit EXIT
 
+# -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 check_custom_dependencies
 deps_check_err=$?
@@ -91,8 +91,7 @@ BIN_FLD="$GHROOT/$PY_VENVS_ROOT/$PY_VENV_FOLDER/bin"
 echo_dbg "[ BIN_FLD: $BIN_FLD ]"
 ln -s "$SIM_CLI" "$BIN_FLD/simcli" -f
 echo ""
-# ls -ls "$BIN_FLD"
-# echo ""
+
 
 # write PATH to cli folder into the venv setup
 # url: https://www.aocks.com/posts/managing-paths-in-python-virtual-environments/
@@ -101,13 +100,7 @@ pth_fld="$GHROOT/$PY_VENVS_ROOT/$PY_VENV_FOLDER/lib/python3.13/site-packages"
 
 # "/eu-core-cli.pth"
 pth_file_path=$pth_fld/eu-core-cli.pth
-# echo_dbg "pth-file-path: $pth_file_path"
-# echo "$PYTHON_PATH/cli" > $pth_file_path
 
-# deactivate
-# echo_dbg "SYS-PATH: $PATH"
-# check_venv_py_ver "$GHROOT/$PY_VENVS_ROOT/$PY_VENV_FOLDER"
-# echo_dbg "VENV-PATH: $PATH"
 
 echo ""
 sleep 1
