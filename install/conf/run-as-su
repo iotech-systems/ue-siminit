@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+clear
+echo ""
+
+echo -e "\e[0;90m"
+# -- config files --
+source conf/github-repos
+source conf/setup-ini
+# -- code files --
+source .syslib/data
+source .syslib/utils
+source .syslib/syscore
+echo -e "\e[0m"
+
+
+on_exit () {
+   echo_call "on_exit"
+   echo_dbg " -- setup end -- "
+   echo ""
+}
+
+
+trap on_exit EXIT

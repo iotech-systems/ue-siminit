@@ -3,7 +3,6 @@
 
 clear
 echo ""
-
 echo -e "\e[0;90m"
 # -- config files --
 source conf/github-repos
