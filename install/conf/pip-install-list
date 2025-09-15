@@ -3,4 +3,4 @@ pygame
 termcolor
 setproctitle
 pyserial
-watchgod
+watchdog
