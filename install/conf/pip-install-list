@@ -5,3 +5,4 @@ setproctitle
 pyserial
 watchdog
 jsbsim
+opencv-python
