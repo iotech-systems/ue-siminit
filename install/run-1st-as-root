@@ -29,7 +29,7 @@ echo_dbg "installing: figlet"
 apt install figlet &> /dev/null
 err0=$?
 echo_dbg "installing: toilet"
-apt install toilet &> /dev/null
+apt install toilet
 err1=$?
 echo_dbg "installing: python3-venv"
 apt install python3-venv &> /dev/null
