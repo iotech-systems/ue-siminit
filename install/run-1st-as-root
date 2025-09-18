@@ -35,7 +35,7 @@ echo_dbg "installing: python3-venv"
 apt install python3-venv -y &> /dev/null
 err2=$?
 echo_dbg "running apt: autoremove"
-apt autoremove &> /dev/null
+apt autoremove -y &> /dev/null
 errX=$?
 
 echo_dbg "[ error-codes: $err0 | $err1 | $err2 | $errX ]"
