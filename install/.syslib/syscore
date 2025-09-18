@@ -20,8 +20,6 @@ iotech_hdr () {
 del_previous_install () {
    echo_call
 
-   store_gtoken
-
    echo_dbg "CONF_INSTALL_PATH: $CONF_INSTALL_PATH"
    rm -r "$CONF_INSTALL_PATH" || echo_neg "UNABLE_TO_REMOVE: ${CONF_INSTALL_PATH}"
    if [ -d "$CONF_INSTALL_PATH" ]; then
@@ -30,22 +28,22 @@ del_previous_install () {
       echo_pos "REMOVED: $CONF_INSTALL_PATH"
    fi
 
-
    echo_call_end
    return 0
 
 }
 
-
 store_gtoken () {
    echo_call
 
    local token_file
-   token_file="${CONF_INSTALL_PATH}/custom/token"
+   token_file="${CONF_INSTALL_PATH}/custom/gtoken"
    echo_dbg "loading: ${token_file}"
-   if [ -a "${token_file}" ]; then
+   if [[ -f "${token_file}" ]]; then
       GBL_TMP_GTOKEN=$(cat $token_file)
       echo_dbg "GBL_TMP_GTOKEN: $GBL_TMP_GTOKEN"
+   else
+      echo_pnf "${token_file}"
    fi
 
    echo_call_end
@@ -69,6 +67,7 @@ run_preinstall () {
       read -r -p "${TAB8}Reinstall? (y/n): " ans
       case "$ans" in
          "Y" | "y")
+            store_gtoken
             del_previous_install
             error_code=$?
             if (( err_code == 0 )); then
@@ -133,179 +132,110 @@ run_install () {
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-check_logs () {
-   echo_call
-   # -- -- --
-
-   local log_file_pyvenv
-   log_file_pyvenv=".logs/py3venv-run"
-
-   if [ ! -f "$log_file_pyvenv" ]; then
-      echo_pnf "$log_file_pyvenv"
-      echo_call_end
-      return 1
-   fi
-
-   local fbuff
-   fbuff=$(cat "$log_file_pyvenv")
-   if [[ "$fbuff" -ne  "PYTHON3-VENV-OK" ]]; then
-      echo_dbg "BAD_PY3_VENV_RUN: $buff"
-      return 2
-   fi
-
-   echo_dbg "PY3_VENV_RUN: $fbuff"
-   echo_pos "$fbuff"
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-set_custom_dpad () {
-   echo_call
-   # -- -- --
-
-   local cust_dpath
-   cust_dpath=$(cat conf/custom-dpath)
-   echo_dbg "checking cust_dpath: $cust_dpath"
-
-   if [ ! -d "$cust_dpath" ]; then
-      echo_pnf "$cust_dpath"
-      return 1
-   fi
-
-   echo_pok "$cust_dpath"
-   GLB_CUST_DPATH="$cust_dpath"
-
-   echo_call_end
-   return 0
-
-}
+# check_logs () {
+#    echo_call
+#    # -- -- --
+#
+#    local log_file_pyvenv
+#    log_file_pyvenv=".logs/py3venv-run"
+#
+#    if [ ! -f "$log_file_pyvenv" ]; then
+#       echo_pnf "$log_file_pyvenv"
+#       echo_call_end
+#       return 1
+#    fi
+#
+#    local fbuff
+#    fbuff=$(cat "$log_file_pyvenv")
+#    if [[ "$fbuff" -ne  "PYTHON3-VENV-OK" ]]; then
+#       echo_dbg "BAD_PY3_VENV_RUN: $buff"
+#       return 2
+#    fi
+#
+#    echo_dbg "PY3_VENV_RUN: $fbuff"
+#    echo_pos "$fbuff"
+#
+#    echo_call_end
+#    return 0
+#
+# }
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-set_gtoken () {
-   echo_call
-   # -- -- --
-
-   local gtoken_file
-   gtoken_file="$GLB_CUST_DPATH/gtoken"
-   echo_dbg "gtoken-fpath: $gtoken_file"
-   if [ ! -f "$gtoken_file" ]; then
-      echo_pnf "$gtoken_file"
-      exit 1
-   fi
-
-   echo_pos "$gtoken_file"
-   GTOKEN=$(cat "$gtoken_file")
-   echo_dbg "GTOKEN: $GTOKEN"
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-set_github_dpath () {
-   echo_call
-   # -- -- --
-
-   local github_root
-   github_root="$GLB_CUST_DPATH/github-root"
-   echo_dbg "checking github_root: $github_root"
-
-   if [ ! -f "$github_root" ]; then
-      echo_pnf "$github_root"
-      exit 1
-   fi
-
-   echo_pos "$github_root"
-   GLB_GITHUB_DPATH=$(cat "$github_root")
-   echo_dbg "GLB_GITHUB_DPATH: $GLB_GITHUB_DPATH"
-
-   if [ ! -d "$GLB_GITHUB_DPATH" ]; then
-      echo_pnf "$GLB_GITHUB_DPATH"
-      return 1
-   fi
-
-   echo_pok "$GLB_GITHUB_DPATH"
-
-   echo_call_end
-   return 0
-
-}
+# set_custom_dpad () {
+#    echo_call
+#    # -- -- --
+#
+#    local cust_dpath
+#    cust_dpath=$(cat conf/custom-dpath)
+#    echo_dbg "checking cust_dpath: $cust_dpath"
+#
+#    if [ ! -d "$cust_dpath" ]; then
+#       echo_pnf "$cust_dpath"
+#       return 1
+#    fi
+#
+#    echo_pok "$cust_dpath"
+#    GLB_CUST_DPATH="$cust_dpath"
+#
+#    echo_call_end
+#    return 0
+#
+# }
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-check_custom_dependencies () {   
-   echo_call
-   # -- -- --
+# set_gtoken () {
+#    echo_call
+#    # -- -- --
+#
+#    local gtoken_file
+#    gtoken_file="$GLB_CUST_DPATH/gtoken"
+#    echo_dbg "gtoken-fpath: $gtoken_file"
+#    if [ ! -f "$gtoken_file" ]; then
+#       echo_pnf "$gtoken_file"
+#       exit 1
+#    fi
+#
+#    echo_pos "$gtoken_file"
+#    GTOKEN=$(cat "$gtoken_file")
+#    echo_dbg "GTOKEN: $GTOKEN"
+#
+#    echo_call_end
+#    return 0
+#
+# }
 
-   # -- -- check custom folder -- --
-   local CUST_DPATH
-   CUST_DPATH=$(cat conf/custom-dpath)
-   echo_dbg "CUST_DPATH: $CUST_DPATH"
-   if [ ! -d "$CUST_DPATH" ]; then
-      echo_pnf $CUST_DPATH
-      exit 1
-   else
-      echo_pos "$CUST_DPATH"
-   fi
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-   # -- check gtoken file --
-   local gtoken_file
-   gtoken_file="$CUST_DPATH/gtoken"
-   echo_dbg "gtoken-fpath: $gtoken_file"
-   if [ ! -f "$gtoken_file" ]; then
-      echo_pnf "$gtoken_file"
-      exit 1
-   else
-      echo_pos "$gtoken_file"
-      GTOKEN=$(cat "$gtoken_file")
-      echo_dbg "GTOKEN: $GTOKEN"
-   fi
-
-   # -- check custom repos file --
-   local custom_repos_file
-   custom_repos_file="$CUST_DPATH/custom-repos"
-   echo_dbg "custom-repos-fpath: $custom_repos_file"
-   if [ ! -f "$custom_repos_file" ]; then
-      echo_pnf "$custom_repos_file"
-      exit 1
-   else 
-      echo_pos "$custom_repos_file"
-      source "$custom_repos_file"
-      for repo in ${GH_CUSTOM_REPOS[@]}; do
-         echo_dbg "repo: $repo"
-      done
-   fi
-
-   # -- check github root folder --
-   local github_root_fld
-   github_root_fld="$CUST_DPATH/github-root"
-   echo_dbg "github_root_fld: $github_root_fld"
-   if [ ! -f "$github_root_fld" ]; then
-      echo_pnf "$github_root_fld"
-      exit 1
-   else 
-      echo_pos "$github_root_fld"
-      GHROOT=$(cat "$github_root_fld")
-      echo_dbg "GHROOT: $GHROOT"
-      if [ ! -d "$GHROOT" ]; then
-         echo_pnf "$GHROOT"
-         exit 1
-      else
-         echo_pos "$GHROOT"
-      fi
-   fi
-
-   echo_call_end
-   return 0
-
-}
+# set_github_dpath () {
+#    echo_call
+#    # -- -- --
+#
+#    local github_root
+#    github_root="$GLB_CUST_DPATH/github-root"
+#    echo_dbg "checking github_root: $github_root"
+#
+#    if [ ! -f "$github_root" ]; then
+#       echo_pnf "$github_root"
+#       exit 1
+#    fi
+#
+#    echo_pos "$github_root"
+#    GLB_GITHUB_DPATH=$(cat "$github_root")
+#    echo_dbg "GLB_GITHUB_DPATH: $GLB_GITHUB_DPATH"
+#
+#    if [ ! -d "$GLB_GITHUB_DPATH" ]; then
+#       echo_pnf "$GLB_GITHUB_DPATH"
+#       return 1
+#    fi
+#
+#    echo_pok "$GLB_GITHUB_DPATH"
+#
+#    echo_call_end
+#    return 0
+#
+# }
 
 
 setup_py_venv () {
@@ -347,8 +277,17 @@ pyvenv_run_pip3 () {
 
    echo_dbg "which-pip3: $(which pip3)"
 
+   local pip_list_file
+   pip_list_file="conf/pip-install-list"
+   if [ ! -f "${pip_list_file}" ]; then
+      echo_pnf "${pip_list_file}"
+      exit 1
+   fi
+
+   echo_dbg "PIP_INSTALL_FILE: ${pip_list_file}"
    gry_block
-   pip3 install -r "$PIP_INSTALL_FLD" &> /dev/null
+   pip install --upgrade pip &> /dev/null
+   pip3 install -r "${pip_list_file}" &> /dev/null
    echo ""
    pip3 list
    gry_block_end
