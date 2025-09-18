@@ -571,7 +571,7 @@ check_custom_folder () {
    GLB_CUSTOM_REPOS=$(cat "${repos_file}")
    echo_dbg "GLB_CUSTOM_REPOS: $GLB_CUSTOM_REPOS"
    if [ -z $GLB_CUSTOM_REPOS ]; then
-      echo_warning "GLB_GTOKEN_IS_EMPTY" && echo ""
+      echo_warning "GLB_CUSTOM_REPOS_IS_EMPTY" && echo ""
    fi
 
    echo_call_end

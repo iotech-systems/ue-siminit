@@ -64,3 +64,7 @@ clone_default_repos
 def_repos_err=$?
 
 
+cd "${CONF_INSTALL_PATH}/github/ue-simcli/cli"
+echo_dbg "CWD: $(pwd)"
+exec "${CONF_INSTALL_PATH}/github/ue-simcli/cli/cli"
+sleep 2

@@ -11,6 +11,6 @@ GH_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-core.git")
 GH_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-pyengine.git")
 GH_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-simui.git")
 GH_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-simbridge.git")
-# GH_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-simbash.git")
+GH_REPOS+=("https://TOKEN@github.com/iotech-systems/ue-simcli.git")
 
 echo "load: OK"
