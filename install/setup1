@@ -1,0 +1,66 @@
+#!/bin/bash
+
+
+gry_block="echo -e \"\e[0;90m\""
+rst_gry="echo -e \"\e[0m\""
+
+eval $gry_block
+source .syslib/include
+eval $rst_gry
+
+
+on_exit () {
+   echo_call "on_exit"
+   echo_dbg " -- setup end -- "
+   echo ""
+}
+
+trap on_exit EXIT
+
+
+iotech_hdr
+
+if (( $UID == 0 )); then
+   echo_neg "Run this script under your login account! Not ROOT !"
+   exit 1
+fi
+
+
+GBL_INSTALL_FLD="$(pwd)"
+
+# -- -- custom folder for custom settings -- --
+check_custom_folder
+cust_fld_err=$?
+
+
+# -- test install path -> if missing exit --
+if [ ! -d "$CONF_INSTALL_PATH" ]; then
+   echo_pnf "$CONF_INSTALL_PATH"
+   echo_neg "[ INSTALL-PATH-NOT-FOUND ]"
+   exit 1
+fi
+
+
+# -- -- install py3.13 in pyvenvs -- --
+check_sys_py
+sys_py_err=$?
+if (( $sys_py_err != 0 )); then
+   echo_neg "[ check_sys_py_error: ${sys_py_err} ]"
+   exit 1
+else
+   echo_pos "[ GOOD-SYSTEM-PYTHON ]"
+fi
+
+setup_py_venv
+py_venv_err=$?
+
+verify_pyvenv
+ver_pyvenv_err=$?
+
+pyvenv_run_pip3
+venv_pip3_err=$?
+
+clone_default_repos
+def_repos_err=$?
+
+

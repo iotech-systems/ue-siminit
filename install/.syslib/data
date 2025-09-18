@@ -3,7 +3,6 @@
 
 echo "loading: .syslib/data"
 
-
 RED_CODE="31"
 GRN_CODE="32"
 YLW_CODE="33"
@@ -29,11 +28,12 @@ BLDYLW="\e[1;${YLW_CODE}m"
 ITALICRED="\e[3;${RED}m"
 ECLR="\e[0m"
 
-START_FLD=""
-PYTHON_PATH=""
-TOKEN_FILE="conf/token-file"
-GTOKEN=""
-PIP_INSTALL_FLD="conf/pip-install-list"
+TAB2="  "
+TAB4="    "
+TAB8="        "
 
+GLB_GTOKEN=""
+GBL_INSTALL_FLD=""
+GLB_CUSTOM_REPOS=""
 
 echo "load: OK"

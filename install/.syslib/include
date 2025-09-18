@@ -1,0 +1,10 @@
+
+clear
+echo ""
+# -- config files --
+source conf/github-repos
+source conf/setup-ini
+# -- code files --
+source .syslib/data
+source .syslib/utils
+source .syslib/syscore

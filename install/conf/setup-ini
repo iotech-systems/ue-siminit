@@ -3,10 +3,10 @@
 
 echo "loading: conf/setup-ini"
 
+CONF_INSTALL_PATH="/opt/temp-iotech"
 
-PY_VENVS_ROOT="py-venvs"
-PY_VENV_FOLDER="py3.13"
-PY_VENV_VER_SETUP="python3.13"
-
+# CONF_PY_VENVS_ROOT="py-venvs"
+# CONF_PY_VENV_FOLDER="py3.13"
+# CONF_PY_VENV_VER="python3.13"
 
 echo "load: OK"

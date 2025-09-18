@@ -4,6 +4,15 @@
 echo "loading: .syslib/utils"
 
 
+gry_block () {
+   echo -e "\e[0;90m"
+}
+
+
+gry_block_end () {
+   echo -e "\e[0m"
+}
+
 
 echo_bylw () {
    echo -e "${BLDYLW}$1$ECLR"
