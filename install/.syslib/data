@@ -33,6 +33,7 @@ TAB4="    "
 TAB8="        "
 
 GLB_GTOKEN=""
+GLB_TMP_GTOKEN=""
 GBL_INSTALL_FLD=""
 GLB_CUSTOM_REPOS=""
 

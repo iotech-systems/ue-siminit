@@ -20,6 +20,8 @@ iotech_hdr () {
 del_previous_install () {
    echo_call
 
+   store_gtoken
+
    echo_dbg "CONF_INSTALL_PATH: $CONF_INSTALL_PATH"
    rm -r "$CONF_INSTALL_PATH" || echo_neg "UNABLE_TO_REMOVE: ${CONF_INSTALL_PATH}"
    if [ -d "$CONF_INSTALL_PATH" ]; then
@@ -28,6 +30,23 @@ del_previous_install () {
       echo_pos "REMOVED: $CONF_INSTALL_PATH"
    fi
 
+
+   echo_call_end
+   return 0
+
+}
+
+
+store_gtoken () {
+   echo_call
+
+   local token_file
+   token_file="${CONF_INSTALL_PATH}/custom/token"
+   echo_dbg "loading: ${token_file}"
+   if [ -a "${token_file}" ]; then
+      GBL_TMP_GTOKEN=$(cat $token_file)
+      echo_dbg "GBL_TMP_GTOKEN: $GBL_TMP_GTOKEN"
+   fi
 
    echo_call_end
    return 0
@@ -94,6 +113,9 @@ run_install () {
    mkdir "${CONF_INSTALL_PATH}/pyvenvs" -p
    mkdir "${CONF_INSTALL_PATH}/custom" -p
    touch "${CONF_INSTALL_PATH}/custom/gtoken"
+   if [ -n "${GBL_TMP_GTOKEN}" ]; then
+      echo "${GBL_TMP_GTOKEN}" > "${CONF_INSTALL_PATH}/custom/gtoken"
+   fi
    touch "${CONF_INSTALL_PATH}/custom/repos"
    chown nobody:nogroup -R "${CONF_INSTALL_PATH}"
    chmod -R 777 "${CONF_INSTALL_PATH}"
