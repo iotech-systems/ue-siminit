@@ -30,6 +30,10 @@ fi
 GBL_INSTALL_FLD="$(pwd)"
 
 
+#  -- load install path --
+CONF_INSTALL_PATH=$(cat conf/install-path)
+
+
 # -- -- custom folder for custom settings -- --
 check_custom_folder
 cust_fld_err=$?
