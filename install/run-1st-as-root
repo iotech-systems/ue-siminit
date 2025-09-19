@@ -41,4 +41,8 @@ errX=$?
 echo_dbg "[ error-codes: $err0 | $err1 | $err2 | $errX ]"
 
 iotech_hdr
+
+set_install_path
+path_err=$?
+
 run_preinstall

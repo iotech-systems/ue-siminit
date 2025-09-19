@@ -57,6 +57,7 @@ store_gtoken () {
 run_preinstall () {
    echo_call
 
+   CONF_INSTALL_PATH=$(cat conf/install-path)
    echo_dbg "CONF_INSTALL_PATH: $CONF_INSTALL_PATH"
 
    local error_code
@@ -82,7 +83,7 @@ run_preinstall () {
       esac
       exit 0
    else
-      read -r -p "Press (y/Y) to continue: " ans
+      read -r -p "${TAB4}Press (y/Y) to continue: " ans
       case "$ans" in
          "Y" | "y")
             run_install
@@ -91,7 +92,7 @@ run_preinstall () {
             exit 0
          ;;
       esac
-      mkdir "$CONF_INSTALL_PATH" || true && echo "DIR-MADE: $CONF_INSTALL_PATH"
+      # mkdir "$CONF_INSTALL_PATH" || true && echo "DIR-MADE: $CONF_INSTALL_PATH"
    fi
 
    echo_call_end
@@ -105,6 +106,7 @@ run_install () {
    echo_call
 
    # create sims folder
+   mkdir "${CONF_INSTALL_PATH}" -p
    mkdir "${CONF_INSTALL_PATH}/simslib" -p
    mkdir "${CONF_INSTALL_PATH}/github" -p
    mkdir "${CONF_INSTALL_PATH}/logs" -p
@@ -132,112 +134,6 @@ run_install () {
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-# check_logs () {
-#    echo_call
-#    # -- -- --
-#
-#    local log_file_pyvenv
-#    log_file_pyvenv=".logs/py3venv-run"
-#
-#    if [ ! -f "$log_file_pyvenv" ]; then
-#       echo_pnf "$log_file_pyvenv"
-#       echo_call_end
-#       return 1
-#    fi
-#
-#    local fbuff
-#    fbuff=$(cat "$log_file_pyvenv")
-#    if [[ "$fbuff" -ne  "PYTHON3-VENV-OK" ]]; then
-#       echo_dbg "BAD_PY3_VENV_RUN: $buff"
-#       return 2
-#    fi
-#
-#    echo_dbg "PY3_VENV_RUN: $fbuff"
-#    echo_pos "$fbuff"
-#
-#    echo_call_end
-#    return 0
-#
-# }
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-# set_custom_dpad () {
-#    echo_call
-#    # -- -- --
-#
-#    local cust_dpath
-#    cust_dpath=$(cat conf/custom-dpath)
-#    echo_dbg "checking cust_dpath: $cust_dpath"
-#
-#    if [ ! -d "$cust_dpath" ]; then
-#       echo_pnf "$cust_dpath"
-#       return 1
-#    fi
-#
-#    echo_pok "$cust_dpath"
-#    GLB_CUST_DPATH="$cust_dpath"
-#
-#    echo_call_end
-#    return 0
-#
-# }
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-# set_gtoken () {
-#    echo_call
-#    # -- -- --
-#
-#    local gtoken_file
-#    gtoken_file="$GLB_CUST_DPATH/gtoken"
-#    echo_dbg "gtoken-fpath: $gtoken_file"
-#    if [ ! -f "$gtoken_file" ]; then
-#       echo_pnf "$gtoken_file"
-#       exit 1
-#    fi
-#
-#    echo_pos "$gtoken_file"
-#    GTOKEN=$(cat "$gtoken_file")
-#    echo_dbg "GTOKEN: $GTOKEN"
-#
-#    echo_call_end
-#    return 0
-#
-# }
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-# set_github_dpath () {
-#    echo_call
-#    # -- -- --
-#
-#    local github_root
-#    github_root="$GLB_CUST_DPATH/github-root"
-#    echo_dbg "checking github_root: $github_root"
-#
-#    if [ ! -f "$github_root" ]; then
-#       echo_pnf "$github_root"
-#       exit 1
-#    fi
-#
-#    echo_pos "$github_root"
-#    GLB_GITHUB_DPATH=$(cat "$github_root")
-#    echo_dbg "GLB_GITHUB_DPATH: $GLB_GITHUB_DPATH"
-#
-#    if [ ! -d "$GLB_GITHUB_DPATH" ]; then
-#       echo_pnf "$GLB_GITHUB_DPATH"
-#       return 1
-#    fi
-#
-#    echo_pok "$GLB_GITHUB_DPATH"
-#
-#    echo_call_end
-#    return 0
-#
-# }
-
-
 setup_py_venv () {
    echo_call
 
@@ -250,6 +146,7 @@ setup_py_venv () {
 
 }
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 pyvenv_run_pip3 () {
    echo_call
@@ -299,6 +196,7 @@ pyvenv_run_pip3 () {
 
 }
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 verify_pyvenv () {
    echo_call
@@ -333,6 +231,7 @@ verify_pyvenv () {
 
 }
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 create_py_venv () {
    echo_call
@@ -476,6 +375,7 @@ clone_cust_repos () {
 
 }
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 sync_repo () {
    echo_call
@@ -493,6 +393,7 @@ sync_repo () {
 
 }
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 check_sys_py () {
    echo_call
@@ -526,6 +427,36 @@ check_sys_py () {
 
 }
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+set_install_path () {
+   echo_call
+
+   local install_path
+   install_path=$(cat conf/install-path)
+   echo_dbg "install-path: ${install_path}"
+   read -r -p "${TAB4}install in [ ${install_path} ] (y/n): " ans
+   case $ans in
+      "Y" | "y")
+         return 0
+      ;;
+      "N" | "n")
+         read -r -p "${TAB4}enter path: " ans
+         echo_dbg "new path: ${ans}"
+         echo "$ans" > conf/install-path
+         return 0
+      ;;
+      *)
+         echo_dbg "BAD_INPUT: ${ans}"
+      ;;
+   esac
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 check_custom_folder () {
    echo_call
