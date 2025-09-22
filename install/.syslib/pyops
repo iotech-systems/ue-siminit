@@ -1,0 +1,203 @@
+#!/bin/bash
+
+echo "loading: .syslib/pyops"
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+setup_py_venv () {
+   echo_call
+
+   local err_code
+   echo_dbg "CWD: $(pwd)"
+   echo_dbg "installing pyvenv: $py_ver in ${CONF_INSTALL_PATH}/pyvenvs/py3.13"
+   python3 -m venv "${CONF_INSTALL_PATH}/pyvenvs/py3.13"
+   err_code=$?
+   if (( err_code != 0 )); then
+      echo_neg "ERROR-SETUP-PY-VENV: ${err_code}"
+      exit 1
+   else
+      echo "${CONF_INSTALL_PATH}/pyvenvs/py3.13" > "${CONF_INSTALL_PATH}/logs/pyvenv-path"
+   fi
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+pyvenv_run_pip3 () {
+   echo_call
+
+   local buff0
+   buff0=$(which python3)
+   echo_dbg "$buff0"
+
+   local buff1
+   buff1=$(which pip3)
+   echo_dbg "$buff1"
+
+   local venv_path
+   venv_path="${CONF_INSTALL_PATH}/pyvenvs/py3.13"
+   [[ ! -d "${venv_path}"  ]] && echo_pnf "${venv_path}" && exit 1
+
+
+   local source_err
+   source "${venv_path}/bin/activate"
+   source_err=$?
+   if (( source_err != 0 )); then
+      echo_neg "source_err: $source_err"
+      return 2
+   fi
+
+   echo_dbg "which-pip3: $(which pip3)"
+
+   cd "${GBL_START_FOLDER}"
+   local pip_list_file
+   pip_list_file="conf/pip-install-list"
+   if [ ! -f "${pip_list_file}" ]; then
+      echo_dbg "cwd: $(pwd)"
+      echo_pnf "${pip_list_file}"
+      exit 1
+   fi
+
+   echo_dbg "PIP_INSTALL_FILE: ${pip_list_file}"
+   gry_block
+   pip install --upgrade pip &> /dev/null
+   pip3 install -r "${pip_list_file}" &> /dev/null
+   echo ""
+   pip3 list
+   gry_block_end
+
+   echo_dbg "which-pip3: $(which pip3)"
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+verify_pyvenv () {
+   echo_call
+
+   local venv_path
+   venv_path="${CONF_INSTALL_PATH}/pyvenvs/py3.13"
+   [[ ! -d "${venv_path}"  ]] && echo_pnf "${venv_path}" && exit 1
+
+
+   local source_err
+   source "${venv_path}/bin/activate"
+   source_err=$?
+   if (( source_err != 0 )); then
+      echo_neg "source_err: $source_err"
+      return 2
+   fi
+
+   local buff0
+   buff0=$(whereis python3)
+   echo_dbg "WHEREIS ( python3 ):"
+   for l in $buff0; do
+      echo_dbg "  -> $l"
+   done
+
+   local buff1
+   buff1=$(which python3)
+   echo_dbg "WHICH ( python3 ):"
+   echo_dbg "  -> $buff1"
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+create_py_venv () {
+   echo_call
+   # -- -- -
+
+   local py_version
+   py_version=$1
+
+   local py_venv_fld
+   py_venv_fld=$2
+
+   echo_dbg "cwd: $(pwd)"
+   echo_dbg "installing py_venv: $py_version / $py_venv_fld"
+
+
+   local py_ver_err_code
+   is_py_ver_installed "$py_version"
+   py_ver_err_code=$?
+   if (( py_ver_err_code != 0 )); then
+      echo_neg "Your system is missing needed version of PYTHON / $py_version"
+      echo_dbg "Please install needed version of PYTHON on your system: $py_version"
+      exit 1
+   else
+      echo_pos "Good SYSTEM python version found: $py_version"
+   fi
+
+   local py_venv_fld_path
+   py_venv_fld_path="$PY_VENVS_ROOT/$py_venv_fld"
+   if [[ -d "$py_venv_fld_path" ]]; then
+      echo_pos "[[ VENV_FOLDER_FOUND: $py_venv_fld_path ]]"
+      local err_code
+      check_venv_py_ver "$py_venv_fld_path"
+      err_code=$?
+      if (( err_code != 0 )); then
+         echo_dbg "[ REINSTALLING VENV: $py_version ]"
+         setup_py_venv "$py_version" "$py_venv_fld_path"
+         check_venv_py_ver "$py_venv_fld_path"
+      fi
+   else
+      echo_neg "[[ VENV_FOLDER_NOT_FOUND ]]"
+      mkdir "$py_venv_fld_path" -p
+      setup_py_venv "$py_version" "$py_venv_fld_path"
+      check_venv_py_ver "$py_venv_fld_path"
+   fi
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+check_sys_py () {
+   echo_call
+
+   local buff0
+   buff0=$(whereis python3)
+   echo_dbg "WHEREIS ( python3 ):"
+   for l in $buff0; do
+      echo_dbg "  -> $l"
+   done
+
+   local buff1
+   buff1=$(which python3)
+   echo_dbg "WHICH ( python3 ):"
+   echo_dbg "  -> $buff1"
+
+   local return_val
+   local buff_pyver
+   buff_pyver=$(python3 --version)
+   echo_dbg "$buff_pyver"
+   if [[ "${buff_pyver,,}" =~ "python 3.13."  ]]; then
+      echo_pos "[ Good python version found: ${buff_pyver} ]"
+      return_val=0
+   else
+      echo_neg "[ System has a wrong python version installed! | ${buff_pyver} ]"
+      return_val=1
+   fi
+
+   echo_call_end
+   return $return_val
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+echo "load: OK"

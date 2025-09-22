@@ -56,8 +56,14 @@ echo_call_end () {
 
 
 echo_info () {
-   echo -e "${BLDBLU}INFO: " && echo -e "${BLU}  * $1 ${ECLR}"
+   echo -e "${BLDBLU}INFO: "
+   echo -e "${BLU}${TAB2}* $1 ${ECLR}"
    echo ""
+}
+
+
+echo_hdr () {
+   echo -e "${ITALICYLW}${TAB4}\n-- -- [ $1 ] -- --\n"
 }
 
 

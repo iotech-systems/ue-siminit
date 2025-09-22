@@ -27,6 +27,7 @@ if (( $UID == 0 )); then
 fi
 
 
+GBL_START_FOLDER="$(pwd)"
 GBL_INSTALL_FLD="$(pwd)"
 
 
@@ -48,6 +49,8 @@ fi
 
 
 # -- -- install py3.13 in pyvenvs -- --
+echo_hdr "PYTHON-VENV-SETUP"
+
 check_sys_py
 sys_py_err=$?
 if (( $sys_py_err != 0 )); then
@@ -57,20 +60,29 @@ else
    echo_pos "[ GOOD-SYSTEM-PYTHON ]"
 fi
 
+
 setup_py_venv
 py_venv_err=$?
 
 verify_pyvenv
 ver_pyvenv_err=$?
 
+
+echo_hdr "PYTHON-PIP3-INSTALLS"
 pyvenv_run_pip3
 venv_pip3_err=$?
 
+
+echo_hdr "CLONING-DEFAULT-REPOS"
 clone_default_repos
 def_repos_err=$?
 
 
-cd "${CONF_INSTALL_PATH}/github/ue-simcli/cli"
-echo_dbg "CWD: $(pwd)"
-exec "${CONF_INSTALL_PATH}/github/ue-simcli/cli/cli"
+echo_hdr "CLONING-CUSTOM-REPOS"
+clone_custom_repos
+cust_repos_err=$?
+
+
+echo_hdr "INSTALLING-SIMCLI"
 sleep 2
+install_simcli

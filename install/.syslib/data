@@ -3,12 +3,14 @@
 
 echo "loading: .syslib/data"
 
+
 RED_CODE="31"
 GRN_CODE="32"
 YLW_CODE="33"
 BLU_CODE="34"
 GRY_CODE="90"
 LGRY_CODE="37"
+
 
 RED="\e[0;${RED_CODE}m"
 GRN="\e[0;${GRN_CODE}m"
@@ -17,24 +19,37 @@ BLU="\e[0;${BLU_CODE}m"
 GRY="\e[0;${GRY_CODE}m"
 LGRY="\e[0;${LGRY_CODE}m"
 
+
 # -- debug/trace string --
 DBG="\e[3;${LGRY_CODE}m"
+
 
 BLDRED="\e[1;${RED_CODE}m"
 BLDGRN="\e[1;${GRN_CODE}m"
 BLDBLU="\e[1;${BLU_CODE}m"
 BLDYLW="\e[1;${YLW_CODE}m"
 
+
 ITALICRED="\e[3;${RED}m"
+ITALICYLW="\e[3;${YLW_CODE}m"
 ECLR="\e[0m"
+
 
 TAB2="  "
 TAB4="    "
 TAB8="        "
 
+
+GBL_TMP_REPOS=""
+GBL_TMP_GTOKEN=""
+GBL_TMP_SIMSLIB=""
+
+GBL_START_FOLDER=""
 GLB_GTOKEN=""
-GLB_TMP_GTOKEN=""
 GBL_INSTALL_FLD=""
-GLB_CUSTOM_REPOS=""
+GLB_CUSTOM_REPOS_PATH=""
+GLB_CUSTOM_FOLDER=""
+GLB_SIMSLIB=""
+
 
 echo "load: OK"

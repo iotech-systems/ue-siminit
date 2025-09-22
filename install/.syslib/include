@@ -1,6 +1,5 @@
 
 clear
-echo ""
 # -- config files --
 source conf/github-repos
 source conf/setup-ini
@@ -8,3 +7,5 @@ source conf/setup-ini
 source .syslib/data
 source .syslib/utils
 source .syslib/syscore
+source .syslib/gitops
+source .syslib/pyops

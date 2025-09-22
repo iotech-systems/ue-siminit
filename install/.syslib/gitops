@@ -1,0 +1,117 @@
+#!/bin/bash
+
+
+echo "loading: .syslib/gitops"
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+clone_default_repos () {
+   echo_call
+
+   echo_dbg "GBL_INSTALL_FLD: ${GBL_INSTALL_FLD}"
+   echo_dbg "CWD: $(pwd)"
+   cd "${CONF_INSTALL_PATH}/github"
+   echo_dbg "CWD: $(pwd)"
+
+   echo ""
+   for repo_url in ${GH_REPOS[@]}; do
+      clone_repo "${repo_url}"
+   done
+
+   echo_call_end
+   return 0
+
+}
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+clone_custom_repos () {
+   echo_call
+
+   while read -r ln && [ -n "$ln" ] && [[ "$ln" == https://* ]]; do
+      echo_dbg "${TAB2}custom-repo-url:${TAB4}${ln}"
+      clone_repo "${ln}"
+   done < "${GLB_CUSTOM_REPOS_PATH}"
+
+   echo_call_end
+   return 0
+
+}
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+clone_repo () {
+   echo_call
+
+   if [ -z "$GLB_GTOKEN" ]; then
+      echo_neg "GLB_GTOKEN_IS_EMPTY"
+      exit 1
+   else
+      echo_dbg "GLB_GTOKEN: ${GLB_GTOKEN}"
+   fi
+
+   local REPOURL
+   REPOURL=$1
+   echo_dbg "checking: ${REPOURL}"
+   if [[ "$REPOURL" != https://github.com* ]]; then
+      echo_warning "BAD-URL: ${REPOURL}"
+      return 0
+   fi
+
+   local OLD_HTTPS
+   OLD_HTTPS="https://github.com"
+   local NEW_HTTPS
+   NEW_HTTPS="https://${GLB_GTOKEN}@github.com"
+   local TOKEN_URL
+   TOKEN_URL="${REPOURL/$OLD_HTTPS/$NEW_HTTPS}"
+   echo_dbg "TOKEN-URL: ${TOKEN_URL}"
+   echo_dbg "CWD: $(pwd)"
+
+   # shellcheck disable=SC2001
+   local err_code
+   gry_block
+   git clone "${TOKEN_URL}"
+   err_code=$?
+   gry_block_end
+
+   if (( err_code == 0 )); then
+      echo_pos "[ ERR: $err_code | OK_CLONING_REPO: ${REPOURL} ]"
+   elif (( err_code != 0 )) && (( err_code == 128 )); then
+      echo_warning "[ ERR: $err_code | ERROR_CLONING_REPO: ${REPOURL} ]"
+   else
+      echo_neg "[ ERR: $err_code | ERROR_CLONING_REPO: ${REPOURL} ]"
+   fi
+
+   echo_call_end
+   return 0
+
+}
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+sync_repo () {
+   echo_call
+
+   echo "   token: $1"
+   echo "   url: $2"
+   echo "   cwd: $(pwd)"
+
+   for fl in . ; do
+      echo "f: $fl"
+   done
+
+   echo_call_end
+   return 0
+
+}
+
+
+echo "load: OK"

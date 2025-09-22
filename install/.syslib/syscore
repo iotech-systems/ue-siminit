@@ -7,11 +7,11 @@ echo "loading: .syslib/syscore"
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 iotech_hdr () {
-   sleep 4
-   clear
+   sleep 2
    echo ""
-   toilet -t -f smblock --filter border:metal " iotech.systems SIMeng "
+   toilet -t -f smblock --filter border:metal "${TAB4}iotech.systems SIMeng${TAB4}"
    echo ""
+   sleep 2
    return 0
 }
 
@@ -33,7 +33,9 @@ del_previous_install () {
 
 }
 
-store_gtoken () {
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+store_customs () {
    echo_call
 
    local token_file
@@ -46,11 +48,30 @@ store_gtoken () {
       echo_pnf "${token_file}"
    fi
 
+   local repos_file
+   repos_file="${CONF_INSTALL_PATH}/custom/repos"
+   echo_dbg "loading: ${repos_file}"
+   if [[ -f "${repos_file}" ]]; then
+      GBL_TMP_REPOS=$(cat $repos_file)
+      echo_dbg "GBL_TMP_REPOS: $GBL_TMP_REPOS"
+   else
+      echo_pnf "${repos_file}"
+   fi
+
+   local simslib_path
+   simslib_path="${CONF_INSTALL_PATH}/custom/simslib-path"
+   echo_dbg "loading: ${simslib_path}"
+   if [[ -f "${simslib_path}" ]]; then
+      GBL_TMP_SIMSLIB=$(cat $simslib_path)
+      echo_dbg "GBL_TMP_SIMSLIB: $GBL_TMP_SIMSLIB"
+   else
+      echo_pnf "${simslib_path}"
+   fi
+
    echo_call_end
    return 0
 
 }
-
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -68,7 +89,7 @@ run_preinstall () {
       read -r -p "${TAB8}Reinstall? (y/n): " ans
       case "$ans" in
          "Y" | "y")
-            store_gtoken
+            store_customs
             del_previous_install
             error_code=$?
             if (( err_code == 0 )); then
@@ -107,323 +128,27 @@ run_install () {
 
    # create sims folder
    mkdir "${CONF_INSTALL_PATH}" -p
-   mkdir "${CONF_INSTALL_PATH}/simslib" -p
    mkdir "${CONF_INSTALL_PATH}/github" -p
    mkdir "${CONF_INSTALL_PATH}/logs" -p
    mkdir "${CONF_INSTALL_PATH}/data" -p
    mkdir "${CONF_INSTALL_PATH}/pyvenvs" -p
    mkdir "${CONF_INSTALL_PATH}/custom" -p
    touch "${CONF_INSTALL_PATH}/custom/gtoken"
-   if [ -n "${GBL_TMP_GTOKEN}" ]; then
-      echo "${GBL_TMP_GTOKEN}" > "${CONF_INSTALL_PATH}/custom/gtoken"
-   fi
-   touch "${CONF_INSTALL_PATH}/custom/repos"
+   echo "${GBL_TMP_GTOKEN}" > "${CONF_INSTALL_PATH}/custom/gtoken"
+   echo "${GBL_TMP_REPOS}" > "${CONF_INSTALL_PATH}/custom/repos"
+   echo "${GBL_TMP_SIMSLIB}" > "${CONF_INSTALL_PATH}/custom/simslib-path"
+
    chown nobody:nogroup -R "${CONF_INSTALL_PATH}"
    chmod -R 777 "${CONF_INSTALL_PATH}"
    # -- -- --
    gry_block
-   ls "${CONF_INSTALL_PATH}" -la
+   ls "${CONF_INSTALL_PATH}" -lh
    gry_block_end
    # -- -- --
    echo "OK" > "${CONF_INSTALL_PATH}/logs/pre-install-msg"
 
    echo_call_end
    return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-setup_py_venv () {
-   echo_call
-
-   echo_dbg "CWD: $(pwd)"
-   echo_dbg "installing pyvenv: $py_ver in ${CONF_INSTALL_PATH}/pyvenv/py3.13"
-   python3 -m venv "${CONF_INSTALL_PATH}/pyvenv/py3.13"
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-pyvenv_run_pip3 () {
-   echo_call
-
-   local buff0
-   buff0=$(which python3)
-   echo_dbg "$buff0"
-
-   local buff1
-   buff1=$(which pip3)
-   echo_dbg "$buff1"
-
-   local venv_path
-   venv_path="${CONF_INSTALL_PATH}/pyvenv/py3.13"
-   [[ ! -d "${venv_path}"  ]] && echo_pnf "${venv_path}" && exit 1
-
-
-   local source_err
-   source "${venv_path}/bin/activate"
-   source_err=$?
-   if (( source_err != 0 )); then
-      echo_neg "source_err: $source_err"
-      return 2
-   fi
-
-   echo_dbg "which-pip3: $(which pip3)"
-
-   local pip_list_file
-   pip_list_file="conf/pip-install-list"
-   if [ ! -f "${pip_list_file}" ]; then
-      echo_pnf "${pip_list_file}"
-      exit 1
-   fi
-
-   echo_dbg "PIP_INSTALL_FILE: ${pip_list_file}"
-   gry_block
-   pip install --upgrade pip &> /dev/null
-   pip3 install -r "${pip_list_file}" &> /dev/null
-   echo ""
-   pip3 list
-   gry_block_end
-
-   echo_dbg "which-pip3: $(which pip3)"
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-verify_pyvenv () {
-   echo_call
-
-   local venv_path
-   venv_path="${CONF_INSTALL_PATH}/pyvenv/py3.13"
-   [[ ! -d "${venv_path}"  ]] && echo_pnf "${venv_path}" && exit 1
-
-
-   local source_err
-   source "${venv_path}/bin/activate"
-   source_err=$?
-   if (( source_err != 0 )); then
-      echo_neg "source_err: $source_err"
-      return 2
-   fi
-
-   local buff0
-   buff0=$(whereis python3)
-   echo_dbg "WHEREIS ( python3 ):"
-   for l in $buff0; do
-      echo_dbg "  -> $l"
-   done
-
-   local buff1
-   buff1=$(which python3)
-   echo_dbg "WHICH ( python3 ):"
-   echo_dbg "  -> $buff1"
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-create_py_venv () {
-   echo_call
-   # -- -- -
-
-   local py_version
-   py_version=$1
-
-   local py_venv_fld
-   py_venv_fld=$2
-
-   echo_dbg "cwd: $(pwd)"
-   echo_dbg "installing py_venv: $py_version / $py_venv_fld"
-
-
-   local py_ver_err_code
-   is_py_ver_installed "$py_version"
-   py_ver_err_code=$?
-   if (( py_ver_err_code != 0 )); then
-      echo_neg "Your system is missing needed version of PYTHON / $py_version"
-      echo_dbg "Please install needed version of PYTHON on your system: $py_version"
-      exit 1
-   else 
-      echo_pos "Good SYSTEM python version found: $py_version"
-   fi
-
-   local py_venv_fld_path
-   py_venv_fld_path="$PY_VENVS_ROOT/$py_venv_fld"
-   if [[ -d "$py_venv_fld_path" ]]; then 
-      echo_pos "[[ VENV_FOLDER_FOUND: $py_venv_fld_path ]]"
-      local err_code
-      check_venv_py_ver "$py_venv_fld_path"
-      err_code=$?
-      if (( err_code != 0 )); then
-         echo_dbg "[ REINSTALLING VENV: $py_version ]"
-         setup_py_venv "$py_version" "$py_venv_fld_path"
-         check_venv_py_ver "$py_venv_fld_path"
-      fi
-   else 
-      echo_neg "[[ VENV_FOLDER_NOT_FOUND ]]"
-      mkdir "$py_venv_fld_path" -p
-      setup_py_venv "$py_version" "$py_venv_fld_path"
-      check_venv_py_ver "$py_venv_fld_path"
-   fi
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-clone_repo () {
-   echo_call
-
-   if [ -z "$GLB_GTOKEN" ]; then
-      echo_neg "GLB_GTOKEN_IS_EMPTY"
-      exit 1
-   fi
-
-   local gurl
-   gurl="$1"
-   echo_dbg "gurl: $gurl"
-
-   # test url for keyword TOKEN   
-   if [[ "$gurl" =~ .*TOKEN*  ]]; then
-      echo_dbg "template: $gurl"
-   else 
-      local turl
-      turl="https://TOKEN@github.com/iotech-systems/ue-core.git"
-      echo_neg "NO_'TOKEN'_IN_REPO_URL: $gurl"
-      echo_info "You must add keyword TOKEN to repo URL\n    [ CORRECT-FORMAT: $turl ]"
-      echo_info "You must fix this and restart the process!"
-      exit 1
-   fi
-
-   local _repo_url
-   _repo_url=$(echo "$gurl" | sed "s/TOKEN/$GLB_GTOKEN/")
-
-   echo_dbg "REPO-URL: ${_repo_url}"
-   echo_dbg "CWD: $(pwd)"
-
-   # shellcheck disable=SC2001
-   local err_code
-   gry_block
-   git clone "${_repo_url}"
-   err_code=$?
-   gry_block_end
-
-   if (( err_code == 0 )); then
-      echo_pos "[ ERR: $err_code | OK_CLONING_REPO: $_repo_url ]"
-   elif (( err_code != 0 )) && (( err_code == 128 )); then
-      echo_warning "[ ERR: $err_code | ERROR_CLONING_REPO: $_repo_url ]"
-   else
-      echo_neg "[ ERR: $err_code | ERROR_CLONING_REPO: $_repo_url ]"
-   fi
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-clone_default_repos () {
-   echo_call
-
-   echo_dbg "GBL_INSTALL_FLD: ${GBL_INSTALL_FLD}"
-   echo_dbg "CWD: $(pwd)"
-   cd "${CONF_INSTALL_PATH}/github"
-   echo_dbg "CWD: $(pwd)"
-
-   echo ""
-   echo_pos "[ INSTALLING_CORE_REPOS ]"
-   for repo_url in ${GH_REPOS[@]}; do
-      clone_repo "${repo_url}"
-   done
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-clone_cust_repos () {
-   echo_call
-   # -- -- --
-   
-   echo_dbg "   gtoken: $1"
-   echo_dbg "   cwd: $(pwd)"
-
-   echo "" && echo ""
-   echo_pos "[ INSTALLING_CUSTOM_REPOS ]"
-   for repo in ${GH_CUSTOM_REPOS[@]}; do
-      clone_repo $1 "$repo"
-   done
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-sync_repo () {
-   echo_call
-
-   echo "   token: $1"
-   echo "   url: $2"
-   echo "   cwd: $(pwd)"
-
-   for fl in . ; do
-      echo "f: $fl"
-   done
-
-   echo_call_end
-   return 0
-
-}
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-check_sys_py () {
-   echo_call
-
-   local buff0
-   buff0=$(whereis python3)
-   echo_dbg "WHEREIS ( python3 ):"
-   for l in $buff0; do
-      echo_dbg "  -> $l"
-   done
-
-   local buff1
-   buff1=$(which python3)
-   echo_dbg "WHICH ( python3 ):"
-   echo_dbg "  -> $buff1"
-
-   local return_val
-   local buff_pyver
-   buff_pyver=$(python3 --version)
-   echo_dbg "$buff_pyver"
-   if [[ "${buff_pyver,,}" =~ "python 3.13."  ]]; then
-      echo_pos "[ Good python version found: ${buff_pyver} ]"
-      return_val=0
-   else
-      echo_neg "[ System has a wrong python version installed! | ${buff_pyver} ]"
-      return_val=1
-   fi
-
-   echo_call_end
-   return $return_val
 
 }
 
@@ -461,25 +186,29 @@ set_install_path () {
 check_custom_folder () {
    echo_call
 
-   local custom_folder
-   custom_folder="${CONF_INSTALL_PATH}/custom"
-   if [ ! -d "${custom_folder}" ]; then
-      echo_pnf "${custom_folder}"
+   GLB_CUSTOM_FOLDER="${CONF_INSTALL_PATH}/custom"
+   if [ ! -d "${GLB_CUSTOM_FOLDER}" ]; then
+      echo_pnf "${GLB_CUSTOM_FOLDER}"
       exit 1
    else
-      echo_pok "${custom_folder}"
+      echo_pok "${GLB_CUSTOM_FOLDER}"
       gry_block
-      ls "${custom_folder}" -la
+      ls "${GLB_CUSTOM_FOLDER}" -lh
       gry_block_end
    fi
 
+   echo_hdr "GTOKEN"
+
+   # -- -- gtoken file -- --
    local token_file
-   token_file="${custom_folder}/gtoken"
+   token_file="${GLB_CUSTOM_FOLDER}/gtoken"
    echo_dbg "checking: ${token_file}"
    if [[ ! -a "${token_file}" ]]; then
       echo_pnf "${token_file}" && echo ""
-      echo_info "Please create [ ${token_file} ] file with github token."
+      echo_info "Please create [ ${token_file} ] file with github PAT token."
       exit 1
+   else
+      echo_pok "${token_file}"
    fi
 
    GLB_GTOKEN=$(cat "${token_file}")
@@ -490,20 +219,95 @@ check_custom_folder () {
       exit 1
    fi
 
-   local token_file
-   repos_file="${custom_folder}/repos"
-   echo_dbg "checking: ${repos_file}"
-   if [[ ! -a "${repos_file}" ]]; then
-      echo_pnf "${repos_file}" && echo ""
-      echo_info "Please create [ ${repos_file} ] file."
+   echo_hdr "REPOS"
+
+   # -- -- repos file -- --
+   GLB_CUSTOM_REPOS_PATH="${GLB_CUSTOM_FOLDER}/repos"
+   echo_dbg "checking: ${GLB_CUSTOM_REPOS_PATH}"
+   if [[ ! -a "${GLB_CUSTOM_REPOS_PATH}" ]]; then
+      echo_pnf "${GLB_CUSTOM_REPOS_PATH}" && echo ""
+      echo_info "Please create [ ${GLB_CUSTOM_REPOS_PATH} ] file.\n${TAB4}if you have custom repos please insert them the 1 per line."
+      exit 1
+   else
+      echo_pok "${GLB_CUSTOM_REPOS_PATH}"
+   fi
+
+   GLB_CUSTOM_REPOS=$(cat "${GLB_CUSTOM_REPOS_PATH}")
+   if [ -z "$GLB_CUSTOM_REPOS" ]; then
+      echo_warning "GLB_CUSTOM_REPOS_IS_EMPTY" && echo ""
+   else
+      while read -r fln && [ -n "$fln" ] && [[ "$fln" == https://* ]]; do
+      echo_dbg "${TAB2}repo-url:${TAB4}${fln}"
+      done < "${GLB_CUSTOM_REPOS_PATH}"
+   fi
+
+   echo_hdr "SIMSLIB-PATH"
+
+   # -- -- simslib file -- --
+   local simslib_file
+   simslib_file="${GLB_CUSTOM_FOLDER}/simslib-path"
+   echo_dbg "checking: ${simslib_file}"
+   if [[ ! -a "${simslib_file}" ]]; then
+      echo_pnf "${simslib_file}" && echo ""
+      echo_info "Please create [ ${simslib_file} ] file, with PATH to your sims root folder."
       exit 1
    fi
 
-   GLB_CUSTOM_REPOS=$(cat "${repos_file}")
-   echo_dbg "GLB_CUSTOM_REPOS: $GLB_CUSTOM_REPOS"
-   if [ -z $GLB_CUSTOM_REPOS ]; then
-      echo_warning "GLB_CUSTOM_REPOS_IS_EMPTY" && echo ""
+   GLB_SIMSLIB=$(cat "${simslib_file}")
+   if [ ! -d "${GLB_SIMSLIB}" ]; then
+      echo_pnf "${GLB_SIMSLIB}"
+      exit 1
+   else
+      echo_pok "${GLB_SIMSLIB}"
+      gry_block
+      ls "${GLB_SIMSLIB}" -lh
+      gry_block_end
    fi
+
+   echo_hdr "SIMSLIB-SIMLINK"
+   local _simslib
+   _simslib="simslib"
+   # symlink to simslib in install folder
+   cd "$CONF_INSTALL_PATH"
+   if [ ! -d "${_simslib}" ]; then
+      ln -s "${GLB_SIMSLIB}" "${_simslib}"
+   else
+      echo_dbg "symlink-exists: ${_simslib}"
+   fi
+
+   gry_block
+   ls -lh
+   gry_block_end
+
+   echo_call_end
+   return 0
+
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+install_simcli () {
+   echo_call
+
+   local bash_path
+   bash_simcli_path="${CONF_INSTALL_PATH}/github/ue-simcli/bash/simcli"
+
+   local lcl_bin
+   lcl_bin=$(realpath ~/.local/bin)
+   cd ${lcl_bin}
+   echo "pwd: $(pwd)"
+   ln -s "${bash_simcli_path}" simcli -f
+   if [ -f "simcli" ]; then
+      echo_pos "simcli-installed"
+   else
+      echo_neg "SIMCLI-INSTALL-ERROR"
+   fi
+
+   local lcl
+   lcl=$(realpath ~/.local)
+   mkdir "${lcl}/etc/simcli" -p
+   echo "${CONF_INSTALL_PATH}" > "${lcl}/etc/simcli/install-path"
+
 
    echo_call_end
    return 0
