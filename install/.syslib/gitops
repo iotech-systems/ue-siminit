@@ -10,6 +10,8 @@ echo "loading: .syslib/gitops"
 clone_default_repos () {
    echo_call
 
+   local buff_on_err2
+   local clone_repo_error
    echo_dbg "GBL_INSTALL_FLD: ${GBL_INSTALL_FLD}"
    echo_dbg "CWD: $(pwd)"
    cd "${CONF_INSTALL_PATH}/github"
@@ -17,7 +19,13 @@ clone_default_repos () {
 
    echo ""
    for repo_url in ${GH_REPOS[@]}; do
-      clone_repo "${repo_url}"
+      clone_repo "$repo_url"
+      clone_repo_error=$?
+      echo_dbg "clone-repo-error/ $clone_repo_error"
+      # -- -- --
+      if (( clone_repo_error == 2 )); then
+         sync_repo "$repo_url"
+      fi
    done
 
    echo_call_end
@@ -32,9 +40,17 @@ clone_default_repos () {
 clone_custom_repos () {
    echo_call
 
-   while read -r ln && [ -n "$ln" ] && [[ "$ln" == https://* ]]; do
-      echo_dbg "${TAB2}custom-repo-url:${TAB4}${ln}"
-      clone_repo "${ln}"
+   local clone_repo_error
+
+   echo ""
+   while read -r repoln && [ -n "$repoln" ] && [[ "$repoln" == https://* ]]; do
+      echo_dbg "${TAB2}custom-repo-url:${TAB4}${repoln}"
+      clone_repo "$repoln"
+      clone_repo_error=$?
+      echo_dbg "clone-repo-error/ $clone_repo_error"
+      if (( clone_repo_error == 2 )); then
+         sync_repo "$repoln"
+      fi
    done < "${GLB_CUSTOM_REPOS_PATH}"
 
    echo_call_end
@@ -65,27 +81,36 @@ clone_repo () {
    fi
 
    local OLD_HTTPS
-   OLD_HTTPS="https://github.com"
    local NEW_HTTPS
-   NEW_HTTPS="https://${GLB_GTOKEN}@github.com"
    local TOKEN_URL
+
+   OLD_HTTPS="https://github.com"
+   NEW_HTTPS="https://${GLB_GTOKEN}@github.com"
    TOKEN_URL="${REPOURL/$OLD_HTTPS/$NEW_HTTPS}"
+
    echo_dbg "TOKEN-URL: ${TOKEN_URL}"
    echo_dbg "CWD: $(pwd)"
 
    # shellcheck disable=SC2001
    local err_code
+   local err_msg
+
    gry_block
-   git clone "${TOKEN_URL}"
+   err_msg=$(git clone "${TOKEN_URL}" 2>&1)
    err_code=$?
    gry_block_end
 
    if (( err_code == 0 )); then
       echo_pos "[ ERR: $err_code | OK_CLONING_REPO: ${REPOURL} ]"
    elif (( err_code != 0 )) && (( err_code == 128 )); then
-      echo_warning "[ ERR: $err_code | ERROR_CLONING_REPO: ${REPOURL} ]"
+      echo_warning "repo-exists!"
+      echo_dbg "err-msg/ $err_msg"
+      echo_dbg "repo-sync/ $REPOURL"
+      buff_on_err2="$err_msg"
+      return 2
    else
       echo_neg "[ ERR: $err_code | ERROR_CLONING_REPO: ${REPOURL} ]"
+      return 4
    fi
 
    echo_call_end
@@ -100,13 +125,27 @@ clone_repo () {
 sync_repo () {
    echo_call
 
-   echo "   token: $1"
-   echo "   url: $2"
-   echo "   cwd: $(pwd)"
+   local repo
+   repo=$1
 
-   for fl in . ; do
-      echo "f: $fl"
-   done
+   echo_dbg "cwd-pwd: $(pwd)"
+   echo_dbg "repo: $repo"
+
+   local tmpbuff
+   local repofld
+   tmpbuff="${repo/"https://github.com/iotech-systems/"/""}"
+   repofld="${tmpbuff/".git"/""}"
+   echo_dbg "repofld: $repofld"
+   cd $repofld
+   echo_dbg "cwd: $(pwd)"
+
+   gry_block
+   git remote -v
+   git pull -f
+   gry_block_end
+   sleep 1
+   cd ..
+   echo_dbg "cwd: $(pwd)"
 
    echo_call_end
    return 0

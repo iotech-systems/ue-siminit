@@ -1,0 +1,81 @@
+#!/bin/bash
+
+
+clear
+
+echo -e "\e[0;90m"
+source .syslib/data
+source .syslib/utils
+source .syslib/syscore
+echo -e "\e[0;0m"
+
+
+on_exit () {
+   echo ""
+   echo " -- sync end -- "
+   echo ""
+}
+
+
+trap on_exit EXIT
+
+
+echo ""
+echo "-- [ running sync ] --"
+echo ""
+
+
+# -- GLOBALS --
+GLB_GTOKEN=""
+GLB_CUST_DPATH=""
+GLB_GITHUB_DPATH=""
+
+set_custom_dpad
+echo_dbg "GLOBAL_CUST_DPATH: $GLB_CUST_DPATH"
+err_code=$?
+if (( $err_code != 0 )); then
+   echo_neg "err_code: $err_code"
+   exit 1
+fi
+
+
+set_gtoken
+echo_dbg "GLOBAL_GTOKEN: $GTOKEN"
+err_code=$?
+if (( $err_code != 0 )); then
+   echo_neg "err_code: $err_code"
+   exit 1
+fi
+
+
+set_github_dpath
+echo_dbg "GLB_GITHUB_DPATH: $GLB_GITHUB_DPATH"
+err_code=$?
+if (( $err_code != 0 )); then
+   echo_neg "err_code: $err_code"
+   exit 1
+fi
+
+# -- move to github folder --
+cd "$GLB_GITHUB_DPATH" || exit 1
+
+echo ""
+echo_dbg "CWD: $(pwd)"
+echo ""
+sleep 2
+
+echo "" && echo ""
+for d in $(ls); do
+   if [[ "$d" = ue-*  ]]; then
+      echo "[ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ]"
+      echo "ue: $d"
+      cd "$d"
+      echo_info "dir: $(pwd)"
+      echo -e "\e[0;90m"
+      git remote -v
+      git pull -f
+      echo -e "\e[0;0m"
+      cd ..
+      sleep 1
+   fi
+done

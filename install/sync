@@ -1,81 +1,88 @@
 #!/bin/bash
 
 
-clear
+gry_block="echo -e \"\e[0;90m\""
+rst_gry="echo -e \"\e[0m\""
 
-echo -e "\e[0;90m"
-source .syslib/data
-source .syslib/utils
-source .syslib/syscore
-echo -e "\e[0;0m"
+eval $gry_block
+source .syslib/include
+eval $rst_gry
 
 
 on_exit () {
-   echo ""
-   echo " -- sync end -- "
+   echo_call "on_exit"
+   echo_dbg " -- setup end -- "
    echo ""
 }
 
-
+# -- -- trap on exit -- --
 trap on_exit EXIT
 
 
-echo ""
-echo "-- [ running sync ] --"
-echo ""
+iotech_hdr
 
-
-# -- GLOBALS --
-GLB_GTOKEN=""
-GLB_CUST_DPATH=""
-GLB_GITHUB_DPATH=""
-
-set_custom_dpad
-echo_dbg "GLOBAL_CUST_DPATH: $GLB_CUST_DPATH"
-err_code=$?
-if (( $err_code != 0 )); then
-   echo_neg "err_code: $err_code"
+if (( $UID == 0 )); then
+   echo_neg "Run this script under your login account! Not ROOT !"
    exit 1
 fi
 
 
-set_gtoken
-echo_dbg "GLOBAL_GTOKEN: $GTOKEN"
-err_code=$?
-if (( $err_code != 0 )); then
-   echo_neg "err_code: $err_code"
+GBL_START_FOLDER="$(pwd)"
+GBL_INSTALL_FLD="$(pwd)"
+
+
+#  -- load install path --
+CONF_INSTALL_PATH=$(cat conf/install-path)
+
+
+# -- -- custom folder for custom settings -- --
+check_custom_folder
+cust_fld_err=$?
+
+
+# -- test install path -> if missing exit --
+if [ ! -d "$CONF_INSTALL_PATH" ]; then
+   echo_pnf "$CONF_INSTALL_PATH"
+   echo_neg "[ INSTALL-PATH-NOT-FOUND ]"
    exit 1
 fi
 
 
-set_github_dpath
-echo_dbg "GLB_GITHUB_DPATH: $GLB_GITHUB_DPATH"
-err_code=$?
-if (( $err_code != 0 )); then
-   echo_neg "err_code: $err_code"
+# -- -- install py3.13 in pyvenvs -- --
+echo_hdr "PYTHON-VENV-SETUP"
+
+check_sys_py
+sys_py_err=$?
+if (( $sys_py_err != 0 )); then
+   echo_neg "[ check_sys_py_error: ${sys_py_err} ]"
    exit 1
+else
+   echo_pos "[ GOOD-SYSTEM-PYTHON ]"
 fi
 
-# -- move to github folder --
-cd "$GLB_GITHUB_DPATH" || exit 1
 
-echo ""
-echo_dbg "CWD: $(pwd)"
-echo ""
+setup_py_venv
+py_venv_err=$?
+
+verify_pyvenv
+ver_pyvenv_err=$?
+
+
+echo_hdr "PYTHON-PIP3-INSTALLS"
+pyvenv_run_pip3
+venv_pip3_err=$?
+
+
+echo_hdr "CLONING-DEFAULT-REPOS"
+clone_default_repos
+def_repos_err=$?
+
+
+echo_hdr "CLONING-CUSTOM-REPOS"
+clone_custom_repos
+cust_repos_err=$?
+
+
+echo_hdr "INSTALLING-SIMCLI"
 sleep 2
-
-echo "" && echo ""
-for d in $(ls); do
-   if [[ "$d" = ue-*  ]]; then
-      echo "[ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ]"
-      echo "ue: $d"
-      cd "$d"
-      echo_info "dir: $(pwd)"
-      echo -e "\e[0;90m"
-      git remote -v
-      git pull -f
-      echo -e "\e[0;0m"
-      cd ..
-      sleep 1
-   fi
-done
+install_simcli
