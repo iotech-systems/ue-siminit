@@ -6,3 +6,4 @@ pyserial
 watchdog
 jsbsim
 opencv-python
+scipy
