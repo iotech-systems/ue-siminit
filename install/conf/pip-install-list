@@ -7,3 +7,5 @@ watchdog
 jsbsim
 opencv-python
 scipy
+flask
+pyopenssl
