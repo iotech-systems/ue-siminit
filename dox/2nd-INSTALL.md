@@ -23,8 +23,8 @@ git clone https://github.com/iotech-systems/ue-siminit.git
 
 
 ## Install 
--- switch to **su** & run these commands
+- switch to **su** & run these commands
 ```
-cd /opt/iotech/client/install
+cd /opt/iotech/client/ue-siminit/install
 ./run-1st-as-root
 ```
