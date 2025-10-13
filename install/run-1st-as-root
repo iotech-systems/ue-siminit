@@ -28,17 +28,22 @@ trap on_exit EXIT
 echo_dbg "installing: figlet"
 apt install figlet -y &> /dev/null
 err0=$?
+
 echo_dbg "installing: toilet"
 apt install toilet -y &> /dev/null
 err1=$?
+
 echo_dbg "installing: python3-venv"
 apt install python3-venv -y &> /dev/null
 err2=$?
+
 echo_dbg "running apt: autoremove"
 apt autoremove -y &> /dev/null
 errX=$?
 
+# -- print error codes --
 echo_dbg "[ error-codes: $err0 | $err1 | $err2 | $errX ]"
+
 
 iotech_hdr
 
