@@ -1,4 +1,6 @@
 
+> This install doc assumes user has basic understanding of Linux command line tools.
+
 # HARDWARE REQUIREMENTS
 ## CPU | RAM | GPU | Monitors
 
