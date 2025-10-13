@@ -13,7 +13,7 @@
 
 - ***LINUX ONLY***
 - distro: UBUNTU 25.04 or better
-- kernal: 6.14 or better
+- kernal: 6.14 (with NTSync driver) or better
 - python 3.13.3 - ***tested***
 
 ## Install
