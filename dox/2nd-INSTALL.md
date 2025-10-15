@@ -1,4 +1,6 @@
 
+> This install doc assumes user has basic understanding of Linux command line tools.
+
 # INTRO
 >
 > System is based on one public repo (this repo) and number 
