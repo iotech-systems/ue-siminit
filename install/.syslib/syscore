@@ -43,6 +43,7 @@ store_customs () {
    echo_dbg "loading: ${token_file}"
    if [[ -f "${token_file}" ]]; then
       GBL_TMP_GTOKEN=$(cat $token_file)
+      [ -z "$GBL_TMP_GTOKEN" ] && echo_neg "gtoken file must be updated"
       echo_dbg "GBL_TMP_GTOKEN: $GBL_TMP_GTOKEN"
    else
       echo_pnf "${token_file}"
@@ -53,6 +54,7 @@ store_customs () {
    echo_dbg "loading: ${repos_file}"
    if [[ -f "${repos_file}" ]]; then
       GBL_TMP_REPOS=$(cat $repos_file)
+      [ -z "$GBL_TMP_REPOS" ] && echo_neg "repos file must be updated"
       echo_dbg "GBL_TMP_REPOS: $GBL_TMP_REPOS"
    else
       echo_pnf "${repos_file}"
@@ -63,6 +65,7 @@ store_customs () {
    echo_dbg "loading: ${simslib_path}"
    if [[ -f "${simslib_path}" ]]; then
       GBL_TMP_SIMSLIB=$(cat $simslib_path)
+      [ -z "$GBL_TMP_SIMSLIB" ] && echo_neg "simslib-path file must be updated"
       echo_dbg "GBL_TMP_SIMSLIB: $GBL_TMP_SIMSLIB"
    else
       echo_pnf "${simslib_path}"
@@ -93,7 +96,8 @@ run_preinstall () {
             del_previous_install
             error_code=$?
             if (( err_code == 0 )); then
-               run_install
+               #run_install
+               return 0
             else
                echo_neg "[ del_previous_install: ${error_code} ]"
             fi
@@ -107,7 +111,8 @@ run_preinstall () {
       read -r -p "${TAB4}Press (y/Y) to continue: " ans
       case "$ans" in
          "Y" | "y")
-            run_install
+            #run_install
+            return 0
          ;;
          *)
             exit 0
@@ -128,6 +133,9 @@ run_install () {
 
    # create sims folder
    mkdir "${CONF_INSTALL_PATH}" -p
+   if [ "${CONF_INSTALL_PATH}" ]; then
+      echo_pos "INSTALL_PATH_CREATED: ${CONF_INSTALL_PATH}"
+   fi
    mkdir "${CONF_INSTALL_PATH}/github" -p
    mkdir "${CONF_INSTALL_PATH}/logs" -p
    mkdir "${CONF_INSTALL_PATH}/data" -p
@@ -158,17 +166,30 @@ set_install_path () {
    echo_call
 
    local install_path
-   install_path=$(cat conf/install-path)
+   local conf_path_file="conf/install-path"
+
+   install_path=$(cat "$conf_path_file")
+   if [ -n "$install_path" ]; then
+      echo_dbg "SET: install-path/ := $install_path"
+   elif [ -n "$CONF_DEFAULT_INSTALL_PATH" ]; then
+      echo_dbg "SET: install-apth/ := CONF_DEFAULT_INSTALL_PATH"
+      install_path=$CONF_DEFAULT_INSTALL_PATH
+      echo_dbg "SET: install-path/ := $install_path"
+   fi
+
    echo_dbg "install-path: ${install_path}"
    read -r -p "${TAB4}install in [ ${install_path} ] (y/n): " ans
    case $ans in
       "Y" | "y")
+         echo "$install_path" > "$conf_path_file"
+         echo_call_end
          return 0
       ;;
       "N" | "n")
          read -r -p "${TAB4}enter path: " ans
          echo_dbg "new path: ${ans}"
-         echo "$ans" > conf/install-path
+         echo "$ans" > "$conf_path_file"
+         echo_call_end
          return 0
       ;;
       *)
@@ -292,8 +313,10 @@ install_simcli () {
    local bash_path
    bash_simcli_path="${CONF_INSTALL_PATH}/github/ue-simcli/bash/simcli"
 
+   # -- -- -- -- -- --
    local lcl_bin
    lcl_bin=$(realpath ~/.local/bin)
+   # -- -- -- -- -- --
    cd ${lcl_bin}
    echo "pwd: $(pwd)"
    ln -s "${bash_simcli_path}" simcli -f

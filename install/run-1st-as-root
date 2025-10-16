@@ -6,10 +6,31 @@ source .syslib/include
 echo -e "\e[0m"
 
 
+on_end_msg () {
+   echo_call
+   endmsg="""
+      NEXT:
+      # ---------------------------------------------------------------------------------------------
+         1. exit: root
+         2. goto folder: [ $1 ]
+         3. update: (if needed) gtoken ~ file with your gtoken - access token to github
+         4. update: (if needed) repos ~ file with custom repos' urls - one url per line
+         5. update: (if needed) simslib-path ~ file with path to root folder where sims are kept
+         6. run: ./sync as loggedin user
+      # ---------------------------------------------------------------------------------------------
+            ~ copy this text for later use
+            ~ scroll over this install output to see if anyting needs attention
+   """
+   echo_bylw "$endmsg"
+   echo_call_end
+   return 0
+}
+
+
 on_exit () {
    echo_call "on_exit"
    echo_dbg " -- run-1st-as-root/ end -- "
-   echo "" && echo "" && echo ""
+   echo "" && echo ""
 }
 
 
@@ -51,3 +72,19 @@ set_install_path
 path_err=$?
 
 run_preinstall
+pre_install_err_code=$?
+if (( pre_install_err_code != 0 )); then
+   echo_neg "RUN_PREINSTALL_ERROR_CODE: $pre_install_err_code"
+   exit 1
+fi
+
+run_install
+run_install_err_code=$?
+if (( run_install_err_code != 0 )); then
+   echo_neg "RUN_INSTALL_ERROR_CODE: $pre_install_err_code"
+   exit 1
+fi
+
+echo ""
+on_end_msg "$(cat conf/install-path)/custom"
+echo ""
