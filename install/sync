@@ -87,8 +87,6 @@ echo_hdr "INSTALLING-SIMCLI"
 sleep 2
 install_simcli
 
-echo ""
-echo_dbg "trying simcli"
-echo ""
+
+# -- call simcli for test --
 simcli
-echo ""

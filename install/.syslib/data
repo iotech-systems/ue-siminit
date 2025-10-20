@@ -36,6 +36,7 @@ ECLR="\e[0m"
 
 
 TAB2="  "
+# TAB4="{$TAB2}{$TAB2}"
 TAB4="    "
 TAB8="        "
 
@@ -43,13 +44,16 @@ TAB8="        "
 GBL_TMP_REPOS=""
 GBL_TMP_GTOKEN=""
 GBL_TMP_SIMSLIB=""
+GBL_TMP_KEYID=""
 
+GBL_KEYID=""
 GBL_START_FOLDER=""
 GLB_GTOKEN=""
 GBL_INSTALL_FLD=""
 GLB_CUSTOM_REPOS_PATH=""
 GLB_CUSTOM_FOLDER=""
 GLB_SIMSLIB=""
+GBL_TMP_KEYID=""
 
 
 echo "load: OK"

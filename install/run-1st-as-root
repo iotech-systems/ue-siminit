@@ -13,10 +13,11 @@ on_end_msg () {
       # ---------------------------------------------------------------------------------------------
          1. exit: root
          2. goto folder: [ $1 ]
-         3. update: (if needed) gtoken ~ file with your gtoken - access token to github
-         4. update: (if needed) repos ~ file with custom repos' urls - one url per line
-         5. update: (if needed) simslib-path ~ file with path to root folder where sims are kept
-         6. run: ./sync as loggedin user
+         3. update: (if needed) keyid ~ file with SYSTEM KEYID - issued by iotech.systems
+         4. update: (if needed) gtoken ~ file with your gtoken - access token to github
+         5. update: (if needed) repos ~ file with custom repos' urls - one url per line
+         6. update: (if needed) simslib-path ~ file with path to root folder where sims are kept
+         7. run: ./sync as loggedin user
       # ---------------------------------------------------------------------------------------------
             ~ copy this text for later use
             ~ scroll over this install output to see if anyting needs attention

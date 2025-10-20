@@ -7,7 +7,6 @@ echo "loading: .syslib/syscore"
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 iotech_hdr () {
-   sleep 2
    echo ""
    toilet -t -f smblock --filter border:metal "${TAB4}iotech.systems SIMeng${TAB4}"
    echo ""
@@ -38,35 +37,56 @@ del_previous_install () {
 store_customs () {
    echo_call
 
+   local tmp=""
+
+   # -- -- keyid -- --
+   local keyid_file
+   keyid_file="${CONF_INSTALL_PATH}/custom/keyid"
+   echo_dbg "loading: ${keyid_file}"
+   if [[ -f "${keyid_file}" ]]; then
+      tmp=$(cat "$keyid_file")
+      GBL_TMP_KEYID="${tmp#[$'\r\t\n ']}"
+      [ -z "$GBL_TMP_KEYID" ] && echo_neg "keyid file must be updated"
+      echo_dbg "GBL_TMP_KEYID: $GBL_TMP_KEYID" && echo ""
+   else
+      echo_pnf "${keyid_file}"
+   fi
+
+   # -- -- gtoken -- --
    local token_file
    token_file="${CONF_INSTALL_PATH}/custom/gtoken"
    echo_dbg "loading: ${token_file}"
    if [[ -f "${token_file}" ]]; then
-      GBL_TMP_GTOKEN=$(cat $token_file)
+      tmp=$(cat $token_file)
+      GBL_TMP_GTOKEN="${tmp#[$'\r\t\n ']}"
       [ -z "$GBL_TMP_GTOKEN" ] && echo_neg "gtoken file must be updated"
-      echo_dbg "GBL_TMP_GTOKEN: $GBL_TMP_GTOKEN"
+      echo_dbg "GBL_TMP_GTOKEN: $GBL_TMP_GTOKEN" && echo ""
    else
       echo_pnf "${token_file}"
    fi
 
+   # -- -- repos -- --
    local repos_file
    repos_file="${CONF_INSTALL_PATH}/custom/repos"
    echo_dbg "loading: ${repos_file}"
    if [[ -f "${repos_file}" ]]; then
-      GBL_TMP_REPOS=$(cat $repos_file)
+      tmp=$(cat $repos_file)
+      GBL_TMP_REPOS="${tmp#[$'\r\t\n ']}"
       [ -z "$GBL_TMP_REPOS" ] && echo_neg "repos file must be updated"
-      echo_dbg "GBL_TMP_REPOS: $GBL_TMP_REPOS"
+      echo_dbg "GBL_TMP_REPOS: $GBL_TMP_REPOS" && echo ""
    else
       echo_pnf "${repos_file}"
    fi
 
+   # -- -- simslib-path -- --
    local simslib_path
    simslib_path="${CONF_INSTALL_PATH}/custom/simslib-path"
    echo_dbg "loading: ${simslib_path}"
    if [[ -f "${simslib_path}" ]]; then
-      GBL_TMP_SIMSLIB=$(cat $simslib_path)
+      tmp=$(cat $simslib_path)
+      GBL_TMP_SIMSLIB="${tmp#[$'\r\t\n ']}"
       [ -z "$GBL_TMP_SIMSLIB" ] && echo_neg "simslib-path file must be updated"
-      echo_dbg "GBL_TMP_SIMSLIB: $GBL_TMP_SIMSLIB"
+      echo_dbg "GBL_TMP_SIMSLIB: $GBL_TMP_SIMSLIB" && echo ""
    else
       echo_pnf "${simslib_path}"
    fi
@@ -136,16 +156,19 @@ run_install () {
    if [ "${CONF_INSTALL_PATH}" ]; then
       echo_pos "INSTALL_PATH_CREATED: ${CONF_INSTALL_PATH}"
    fi
-   mkdir "${CONF_INSTALL_PATH}/github" -p
+   # -- -- subfolders -- --
    mkdir "${CONF_INSTALL_PATH}/logs" -p
    mkdir "${CONF_INSTALL_PATH}/data" -p
-   mkdir "${CONF_INSTALL_PATH}/pyvenvs" -p
    mkdir "${CONF_INSTALL_PATH}/custom" -p
+   mkdir "${CONF_INSTALL_PATH}/github" -p
+   mkdir "${CONF_INSTALL_PATH}/pyvenvs" -p
+   # -- -- files -- --
    touch "${CONF_INSTALL_PATH}/custom/gtoken"
-   echo "${GBL_TMP_GTOKEN}" > "${CONF_INSTALL_PATH}/custom/gtoken"
    echo "${GBL_TMP_REPOS}" > "${CONF_INSTALL_PATH}/custom/repos"
+   echo "${GBL_TMP_KEYID}" > "${CONF_INSTALL_PATH}/custom/keyid"
+   echo "${GBL_TMP_GTOKEN}" > "${CONF_INSTALL_PATH}/custom/gtoken"
    echo "${GBL_TMP_SIMSLIB}" > "${CONF_INSTALL_PATH}/custom/simslib-path"
-
+   # -- -- file settings -- --
    chown nobody:nogroup -R "${CONF_INSTALL_PATH}"
    chmod -R 777 "${CONF_INSTALL_PATH}"
    # -- -- --
@@ -218,8 +241,28 @@ check_custom_folder () {
       gry_block_end
    fi
 
-   echo_hdr "GTOKEN"
+   echo_hdr "KEYID"
+   # -- -- keyid -- --
+   local keyid_file
+   keyid_file="${GLB_CUSTOM_FOLDER}/keyid"
+   echo_dbg "checking: ${keyid_file}"
+   if [[ ! -a "${keyid_file}" ]]; then
+      echo_pnf "${keyid_file}" && echo ""
+      echo_info "Please create [ ${keyid_file} ] file with SYSTEM KEYID."
+      exit 1
+   else
+      echo_pok "${keyid_file}"
+   fi
 
+   GLB_KEYID=$(cat "${keyid_file}")
+   echo_dbg "GLB_KEYID: $GLB_KEYID"
+   if [ -z $GLB_KEYID ]; then
+      echo_neg "GLB_KEYID_IS_EMPTY" && echo ""
+      echo_info "Please insert SYSTEM KEYID [ ${keyid_file} ] file."
+      exit 1
+   fi
+
+   echo_hdr "GTOKEN"
    # -- -- gtoken file -- --
    local token_file
    token_file="${GLB_CUSTOM_FOLDER}/gtoken"
@@ -241,7 +284,6 @@ check_custom_folder () {
    fi
 
    echo_hdr "REPOS"
-
    # -- -- repos file -- --
    GLB_CUSTOM_REPOS_PATH="${GLB_CUSTOM_FOLDER}/repos"
    echo_dbg "checking: ${GLB_CUSTOM_REPOS_PATH}"
@@ -263,7 +305,6 @@ check_custom_folder () {
    fi
 
    echo_hdr "SIMSLIB-PATH"
-
    # -- -- simslib file -- --
    local simslib_file
    simslib_file="${GLB_CUSTOM_FOLDER}/simslib-path"
