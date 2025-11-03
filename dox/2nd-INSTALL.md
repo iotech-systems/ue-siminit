@@ -1,5 +1,5 @@
 
-> This install doc assumes user has basic understanding of Linux command line tools.
+> These install dox assume user has basic understanding of Linux command line tools.
 
 # INTRO
 >
