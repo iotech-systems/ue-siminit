@@ -35,10 +35,10 @@
           <mxGeometry x="880" y="600" width="240" height="160" as="geometry" />
         </mxCell>
         <mxCell id="BizBs9YoU3aKswlZTYuZ-20" value="" style="verticalLabelPosition=bottom;sketch=0;aspect=fixed;html=1;verticalAlign=top;strokeColor=none;align=center;outlineConnect=0;shape=mxgraph.citrix.browser;" vertex="1" parent="1">
-          <mxGeometry x="1300" y="625" width="91.72" height="140" as="geometry" />
+          <mxGeometry x="1230" y="607.5" width="114.65" height="175" as="geometry" />
         </mxCell>
         <mxCell id="BizBs9YoU3aKswlZTYuZ-21" value="" style="html=1;shadow=0;dashed=0;align=center;verticalAlign=middle;shape=mxgraph.arrows2.twoWayArrow;dy=0.6;dx=35;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;opacity=40;rotation=-180;" vertex="1" parent="1">
-          <mxGeometry x="1110" y="670" width="210" height="50" as="geometry" />
+          <mxGeometry x="1110" y="670" width="150" height="50" as="geometry" />
         </mxCell>
         <mxCell id="BizBs9YoU3aKswlZTYuZ-22" value="&lt;div&gt;ue-core / py3&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=20;fillColor=#e1d5e7;strokeColor=#9673a6;align=center;verticalAlign=middle;strokeWidth=2;opacity=80;" vertex="1" parent="1">
           <mxGeometry x="90" y="690" width="220" height="50" as="geometry" />
