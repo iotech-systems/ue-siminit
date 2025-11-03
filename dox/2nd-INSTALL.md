@@ -8,6 +8,14 @@
 > specific repos used to enable specific client's needs.
 >
 
+### System Repos
+
+- **ue-siminit** ( this repo )
+- **ue-core** ( shared data types, classes & etc )
+- **ue-simcli** ( simcli - tool to execute basic sim commands )
+- **ue-simui** ( web based UI to simulation ) 
+
+
 ### nomenclature
 - ***simbox*** - computer with on which simulation runs
 - ***#*** - comment
